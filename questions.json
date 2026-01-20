@@ -1,0 +1,30 @@
+{
+  "start": {
+    "text": "Как тебя зовут?",
+    "freeInput": true,
+    "saveAs": "name",
+    "next": "age"
+  },
+
+  "age": {
+    "text": "Сколько тебе лет?",
+    "freeInput": true,
+    "saveAs": "age",
+    "next": "gender"
+  },
+
+  "gender": {
+    "text": "Выбери пол",
+    "options": [
+      { "label": "Мужской", "value": "male" },
+      { "label": "Женский", "value": "female" }
+    ],
+    "saveAs": "gender",
+    "next": "end"
+  },
+
+  "end": {
+    "text": "Спасибо! Анкета заполнена ✅",
+    "end": true
+  }
+}
