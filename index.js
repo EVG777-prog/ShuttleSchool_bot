@@ -1,5 +1,8 @@
 require("dotenv").config();
 
+console.log("TOKEN:", process.env.BOT_TOKEN);
+console.log("ADMIN_CHAT_ID:", process.env.ADMIN_CHAT_ID);
+
 const TelegramBot = require("node-telegram-bot-api");
 const flow = require("./questions.json");
 
@@ -9,8 +12,13 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 const userState = {};
 const userAnswers = {};
 
+bot.getMe().then((botInfo) => {
+  console.log("Бот подключен:", botInfo.username);
+});
+
 function sendStep(chatId, stepKey) {
   const step = flow[stepKey];
+  console.log("sendStep called:", stepKey, step); // лог
   if (!step) return;
 
   userState[chatId] = stepKey;
@@ -63,25 +71,33 @@ bot.on("message", (msg) => {
   const stepKey = userState[chatId];
   const step = flow[stepKey];
 
-  if (!step?.freeInput) return;
+  if (!step) return;
 
-  // сохраняем ответ
-  if (step.saveAs) {
-    userAnswers[chatId][step.saveAs] = text;
+  // Если есть кнопки — игнорируем текст
+  if (step.options && step.options.length > 0) {
+    bot.sendMessage(chatId, "Будь ласка, оберіть варіант кнопкою 👆");
+    return;
   }
 
-  // конец анкеты
-  if (step.end || flow[step.next]?.end) {
-    sendResultsToAdmin(chatId);
-  }
+  // только если freeInput разрешен
+  if (step.freeInput) {
+    if (step.saveAs) {
+      userAnswers[chatId][step.saveAs] = text;
+    }
 
-  sendStep(chatId, step.next);
+    // конец анкеты
+    if (step.end || flow[step.next]?.end) {
+      sendResultsToAdmin(chatId);
+    }
+
+    sendStep(chatId, step.next);
+  }
 });
 
 function sendResultsToAdmin(chatId) {
   const answers = userAnswers[chatId];
 
-  let message = "📝 Новая анкета:\n\n";
+  let message = "📝 Нова анкета:\n\n";
   for (const key in answers) {
     message += `${key}: ${answers[key]}\n`;
   }
