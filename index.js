@@ -18,17 +18,23 @@ bot.getMe().then((botInfo) => {
 
 function sendStep(chatId, stepKey) {
   const step = flow[stepKey];
-  console.log("sendStep called:", stepKey, step); // лог
   if (!step) return;
 
   userState[chatId] = stepKey;
 
-  const keyboard = step.options?.map((opt) => [
-    { text: opt.label, callback_data: opt.value },
-  ]);
+  let keyboard = undefined;
+
+  if (step.options && step.options.length > 0) {
+    keyboard = step.options.map((opt, index) => [
+      {
+        text: opt.label,
+        callback_data: opt.value || `info_${index}`,
+      },
+    ]);
+  }
 
   bot.sendMessage(chatId, step.text, {
-    reply_markup: keyboard?.length ? { inline_keyboard: keyboard } : undefined,
+    reply_markup: keyboard ? { inline_keyboard: keyboard } : undefined,
   });
 }
 
@@ -45,15 +51,25 @@ bot.on("callback_query", (query) => {
   const step = flow[stepKey];
   if (!step) return;
 
-  const option = step.options?.find((o) => o.value === query.data);
+  // инфо кнопка
+  if (query.data.startsWith("info_")) {
+    const index = Number(query.data.replace("info_", ""));
+    const option = step.options[index];
 
-  if (step.saveAs && option) {
+    bot.sendMessage(chatId, option.info);
+    sendStep(chatId, stepKey); // остаёмся на том же вопросе
+    bot.answerCallbackQuery(query.id);
+    return;
+  }
+
+  const option = step.options.find((o) => o.value === query.data);
+  if (!option) return;
+
+  if (step.saveAs) {
     userAnswers[chatId][step.saveAs] = option.value;
   }
 
   const nextStep = step.next;
-
-  // ✅ ЕСЛИ СЛЕДУЮЩИЙ ШАГ — КОНЕЦ
   if (flow[nextStep]?.end) {
     sendResultsToAdmin(chatId);
   }
