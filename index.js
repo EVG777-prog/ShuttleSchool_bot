@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { getRates } = require("./google_docs");
 
 console.log("TOKEN:", process.env.BOT_TOKEN);
 console.log("ADMIN_CHAT_ID:", process.env.ADMIN_CHAT_ID);
@@ -16,11 +17,32 @@ bot.getMe().then((botInfo) => {
   console.log("Бот подключен:", botInfo.username);
 });
 
-function sendStep(chatId, stepKey) {
+async function sendStep(chatId, stepKey) {
   const step = flow[stepKey];
   if (!step) return;
 
   userState[chatId] = stepKey;
+
+  if (step.text === "dynamic:individual") {
+    const rates = await getRates();
+
+    const rate45first = rates.find((r) =>
+      r.name.includes("Перший урок “Лише ти 45”"),
+    );
+    const rate90first = rates.find((r) =>
+      r.name.includes("Перший урок “Лише ти 90”"),
+    );
+    const rate45 = rates.find((r) => r.name.includes("Тариф “Лише ти 45”"));
+    const rate90 = rates.find((r) => r.name.includes("Тариф “Лише ти 90”"));
+
+    step.text = `Можемо запропонувати два варіанти індивідуальних занять:
+
+• тариф «${rate45.name}» становить: ${rate45.price} грн за кожні ${rate45.lessons} уроків по 45 хвилин, заняття відбуваються 2 рази на тиждень. Вартість  пробного уроку – ${rate45first.price} грн.
+
+• тариф «${rate90.name}» становить: ${rate90.price} грн за кожні ${rate90.lessons} уроків по 90 хвилин, заняття відбуваються 2 рази на тиждень. Вартість  пробного уроку – ${rate90first.price} грн.
+
+Якщо після пробного уроку вам все сподобається, зможете внести оплату за перший місяць. Який з тарифів вам більше підходить?`;
+  }
 
   let keyboard = undefined;
 
@@ -33,7 +55,7 @@ function sendStep(chatId, stepKey) {
     ]);
   }
 
-  bot.sendMessage(chatId, step.text, {
+  await bot.sendMessage(chatId, step.text, {
     reply_markup: keyboard ? { inline_keyboard: keyboard } : undefined,
   });
 }
@@ -69,7 +91,8 @@ bot.on("callback_query", (query) => {
     userAnswers[chatId][step.saveAs] = option.value;
   }
 
-  const nextStep = step.next;
+  const nextStep = option.next || step.next;
+
   if (flow[nextStep]?.end) {
     sendResultsToAdmin(chatId);
   }
