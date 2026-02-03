@@ -22,13 +22,24 @@ async function getRates() {
   const sheet = doc.sheetsByTitle["Rates"];
   const rows = await sheet.getRows();
 
-  return rows.map((row) => ({
-    name: row["Ім'я"],
-    price: row["Ціна"],
-    duration: row["Тривалість"],
-    lessons: row["Кількість уроків"],
-    details: row["Деталі"],
-  }));
+  const rates = [];
+
+  rows.forEach((row) => {
+    const data = row._rawData;
+
+    // если строка пустая — пропускаем
+    if (!data || data.length < 5) return;
+
+    rates.push({
+      name: data[0],
+      price: data[1],
+      duration: data[2],
+      details: data[3],
+      lessons: data[4],
+    });
+  });
+
+  return rates;
 }
 
 /**
@@ -47,14 +58,25 @@ async function getTeachers(lang) {
   const sheet = doc.sheetsByTitle[sheetName];
   const rows = await sheet.getRows();
 
-  return rows.map((row) => ({
-    name: row["Ім'я"],
-    description: row["Опис"],
-    photo: row["Фото"],
-    link: row["Посилання"],
-    slots45: row["Слоти 45"],
-    slots90: row["Слоти 90"],
-  }));
+  const teachers = [];
+
+  rows.forEach((row) => {
+    const data = row._rawData;
+
+    // если строка пустая — пропускаем
+    if (!data || data.length < 3) return;
+
+    teachers.push({
+      name: data[0],
+      description: data[1],
+      photo_name: data[2],
+      youtube: data[3],
+      slots45: data[4],
+      slots90: data[5],
+    });
+  });
+
+  return teachers;
 }
 
 module.exports = {

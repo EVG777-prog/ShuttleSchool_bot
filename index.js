@@ -1,14 +1,14 @@
 require("dotenv").config();
 
+const TelegramBot = require("node-telegram-bot-api");
+const flow = require("./questions.json");
+
 const { initGoogle, getRates, getTeachers } = require("./google_docs");
 
 (async () => {
   await initGoogle();
   console.log("🚀 Google Sheets ready");
 })();
-
-const TelegramBot = require("node-telegram-bot-api");
-const flow = require("./questions.json");
 
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
