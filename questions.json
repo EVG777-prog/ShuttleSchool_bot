@@ -78,6 +78,14 @@
       }
     ],
     "saveAs": "Рівень",
+    "next": "contact"
+  },
+
+  "contact": {
+    "text": "Щоб менеджер міг з вами звʼязатись, будь ласка, поділіться номером телефону 📱",
+    "requestContact": true,
+    "freeInput": true,
+    "saveAs": "Телефон",
     "next": "end"
   },
 

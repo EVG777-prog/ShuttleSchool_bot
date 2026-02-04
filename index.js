@@ -24,6 +24,23 @@ async function sendStep(chatId, stepKey) {
   const step = flow[stepKey];
   if (!step) return;
 
+  // 🔥 ПРОВЕРКА: Если это шаг с контактом, но ник уже есть
+  if (
+    step.requestContact &&
+    userAnswers[chatId]?.["Telegram"] &&
+    userAnswers[chatId]["Telegram"] !== "-"
+  ) {
+    console.log(
+      `Пропускаем сбор телефона для ${chatId}, так как есть ник: ${userAnswers[chatId]["Telegram"]}`,
+    );
+
+    // Сразу переходим к следующему шагу (обычно "end")
+    if (step.next) {
+      sendStep(chatId, step.next);
+      return;
+    }
+  }
+
   userState[chatId] = stepKey;
 
   if (step.text === "dynamic:individual") {
@@ -107,6 +124,17 @@ async function sendStep(chatId, stepKey) {
     ]);
   }
 
+  if (step.requestContact) {
+    bot.sendMessage(chatId, step.text, {
+      reply_markup: {
+        keyboard: [[{ text: "📞 Надіслати номер", request_contact: true }]],
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
+    });
+    return;
+  }
+
   await bot.sendMessage(chatId, step.text, {
     reply_markup: keyboard ? { inline_keyboard: keyboard } : undefined,
   });
@@ -114,16 +142,24 @@ async function sendStep(chatId, stepKey) {
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-
-  userAnswers[chatId] = {}; // очищаем ответы
+  userAnswers[chatId] = {
+    Telegram: msg.from.username ? "@" + msg.from.username : "-",
+  };
   sendStep(chatId, "start");
 });
 
 bot.on("callback_query", async (query) => {
   const chatId = query.message.chat.id;
+
   const stepKey = userState[chatId];
   const step = flow[stepKey];
   if (!step) return;
+
+  // ❗ Если у шага нет options — игнорируем callback
+  if (!step.options) {
+    bot.answerCallbackQuery(query.id);
+    return;
+  }
 
   // инфо кнопка
   if (query.data.startsWith("info_")) {
@@ -157,7 +193,7 @@ bot.on("callback_query", async (query) => {
   bot.answerCallbackQuery(query.id);
 });
 
-bot.on("message", (msg) => {
+bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
@@ -180,9 +216,14 @@ bot.on("message", (msg) => {
       userAnswers[chatId][step.saveAs] = text;
     }
 
-    // конец анкеты
-    if (step.end || flow[step.next]?.end) {
-      sendResultsToAdmin(chatId);
+    // const nextStep = option.next || step.next;
+
+    if (flow[step.next]?.end) {
+      await bot.sendMessage(chatId, flow[step.next].text); // показать финал
+      sendResultsToAdmin(chatId); // отправить админу
+      delete userState[chatId]; // закрыть диалог
+      // bot.answerCallbackQuery(query.id);
+      return; // ❗ КРИТИЧЕСКИ ВАЖНО
     }
 
     sendStep(chatId, step.next);
