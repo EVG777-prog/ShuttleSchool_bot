@@ -47,7 +47,56 @@ async function sendStep(chatId, stepKey) {
 Якщо після пробного уроку вам все сподобається, зможете внести оплату за перший місяць. Який з тарифів вам більше підходить?`;
   }
 
-  let keyboard = undefined;
+  // 🔥 Динамическая подгрузка преподавателей
+  if (stepKey === "teachers") {
+    const lang = userAnswers[chatId]["Мова"];
+    const duration = userAnswers[chatId]["Тривалість"]; // "45 хв" или "90 хв"
+
+    const teachers = await getTeachers(lang);
+
+    console.log(userAnswers);
+    console.log(lang);
+    console.log(duration);
+
+    const availableTeachers = teachers.filter((t) =>
+      duration === "45 хв" ? t.slots45 : t.slots90,
+    );
+
+    console.log(availableTeachers);
+
+    step.options = availableTeachers.map((t) => ({
+      label: t.name,
+      value: t.name,
+    }));
+  }
+
+  // 🔥 Динамическая подгрузка слотов
+  if (stepKey === "slots") {
+    const lang = userAnswers[chatId]["Мова"];
+    const duration = userAnswers[chatId]["Тривалість"]; // "45 хв" или "90 хв"
+    const teacherName = userAnswers[chatId]["Вчитель"];
+
+    const teachers = await getTeachers(lang);
+
+    const teacher = teachers.find((t) => t.name === teacherName);
+
+    if (!teacher) {
+      step.options = [{ label: "Немає доступних слотів", value: "none" }];
+      return;
+    }
+
+    const availableSlots =
+      duration === "45 хв" ? teacher.slots45 : teacher.slots90;
+
+    const slotsArray = availableSlots
+      ? availableSlots.split(",").map((s) => s.trim())
+      : [];
+
+    step.options = slotsArray.map((slot) => ({
+      label: slot,
+      value: slot,
+    }));
+  }
 
   if (step.options && step.options.length > 0) {
     keyboard = step.options.map((opt, index) => [
@@ -70,7 +119,7 @@ bot.onText(/\/start/, (msg) => {
   sendStep(chatId, "start");
 });
 
-bot.on("callback_query", (query) => {
+bot.on("callback_query", async (query) => {
   const chatId = query.message.chat.id;
   const stepKey = userState[chatId];
   const step = flow[stepKey];
@@ -97,7 +146,11 @@ bot.on("callback_query", (query) => {
   const nextStep = option.next || step.next;
 
   if (flow[nextStep]?.end) {
-    sendResultsToAdmin(chatId);
+    await bot.sendMessage(chatId, flow[nextStep].text); // показать финал
+    sendResultsToAdmin(chatId); // отправить админу
+    delete userState[chatId]; // закрыть диалог
+    bot.answerCallbackQuery(query.id);
+    return; // ❗ КРИТИЧЕСКИ ВАЖНО
   }
 
   sendStep(chatId, nextStep);
