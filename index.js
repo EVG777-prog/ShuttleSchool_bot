@@ -1,7 +1,12 @@
 require("dotenv").config();
 const TelegramBot = require("node-telegram-bot-api");
 const flow = require("./questions.json");
-const { initGoogle, getRates, getTeachers } = require("./google_docs");
+const {
+  initGoogle,
+  getRates,
+  getTeachers,
+  refreshCache,
+} = require("./google_docs");
 
 (async () => {
   await initGoogle();
@@ -13,6 +18,10 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 const userState = {};
 const userAnswers = {};
 
+bot.on("message", (msg) => {
+  console.log(msg.chat.id, msg.from.username);
+});
+
 bot.getMe().then((botInfo) => {
   console.log("Бот підключений:", botInfo.username);
 });
@@ -21,77 +30,51 @@ async function sendStep(chatId, stepKey) {
   const step = flow[stepKey];
   if (!step) return;
 
+  const answers = userAnswers[chatId] || {};
+
   // 1. ПЕРЕВІРКА: Якщо це крок з контактом, але нік вже є — пропускаємо
-  if (
-    step.requestContact &&
-    userAnswers[chatId]?.["Telegram"] &&
-    userAnswers[chatId]["Telegram"] !== "-"
-  ) {
-    if (step.next) return sendStep(chatId, step.next);
+  if (step.requestContact && answers.Telegram && answers.Telegram !== "-") {
+    const nextStepKey = step.next;
+
+    // Якщо наступний крок - фінальний, завершуємо анкету
+    if (flow[nextStepKey]?.end) {
+      await bot.sendMessage(chatId, flow[nextStepKey].text, {
+        reply_markup: { remove_keyboard: true },
+      });
+      sendResultsToAdmin(chatId); // Надсилаємо результат адміну!
+      delete userState[chatId];
+      return;
+    }
+
+    // Інакше просто йдемо далі
+    return sendStep(chatId, nextStepKey);
   }
 
   userState[chatId] = stepKey;
 
   // 2. ДИНАМІЧНІ ТЕКСТИ (Тарифи)
   if (step.text === "dynamic:individual") {
-    const rates = await getRates();
-    const r45f = rates.find((r) => r.name.includes("Перший урок “Лише ти 45”"));
-    const r90f = rates.find((r) => r.name.includes("Перший урок “Лише ти 90”"));
-    const r45 = rates.find((r) => r.name.includes("Тариф “Лише ти 45”"));
-    const r90 = rates.find((r) => r.name.includes("Тариф “Лише ти 90”"));
-
-    step.text = `Можемо запропонувати два варіанти індивідуальних занять:\n\n• тариф «${r45.name}»: ${r45.price} грн за ${r45.lessons} занять. Пробний – ${r45f.price} грн.\n\n• тариф «${r90.name}»: ${r90.price} грн за ${r90.lessons} занять. Пробний – ${r90f.price} грн.`;
+    await handleDynamicRates(step);
   }
 
-  // 3. ПІДГОТОВКА ОПЦІЙ (Вчителі та Слоти)
+  // 2.5 ДИНАМІЧНІ ТЕКСТИ (Платіж першого уроку)
+  if (step.text === "dynamic:payment") {
+    await handleDynamicPayment(step, chatId);
+  }
+
+  // 3. ПІДГОТОВКА ОПЦІЙ (Вчителі)
   if (stepKey === "teachers") {
-    const teachers = await getTeachers(userAnswers[chatId]["Мова"]);
-    const duration = userAnswers[chatId]["Тривалість"];
-    const availableTeachers = teachers.filter((t) =>
-      duration === "45 хв" ? t.slots45 : t.slots90,
-    );
-
-    // ⬅️ ПЕРЕВІРКА: якщо немає вчителів - пропускаємо крок
-    if (availableTeachers.length === 0) {
-      if (step.next) return sendStep(chatId, step.next);
-      return;
-    }
-
-    step.options = availableTeachers.map((t) => ({
-      label: t.name,
-      value: t.name,
-    }));
+    const shouldSkip = await handleTeachersStep(chatId, step, answers);
+    if (shouldSkip) return;
   }
+
+  // 4. ПІДГОТОВКА КЛАВІАТУРИ
   let keyboard = [];
 
   if (stepKey === "slots") {
-    // ⬅️ КЕШИРУЕМ данные учителя при первом заходе на этот шаг
-    const teachers = await getTeachers(userAnswers[chatId]["Мова"]);
-    const teacher = teachers.find(
-      (t) => t.name === userAnswers[chatId]["Вчитель"],
-    );
-
-    if (teacher) {
-      userAnswers[chatId]._cachedTeacher = teacher; // сохраняем в кеш
-
-      const duration = userAnswers[chatId]["Тривалість"];
-      const raw = duration === "45 хв" ? teacher.slots45 : teacher.slots90;
-
-      // ⬅️ Якщо немає слотів - пропускаємо крок
-      if (!raw || raw.trim() === "") {
-        await bot.sendMessage(
-          chatId,
-          "На жаль, у обраного вчителя зараз немає доступних слотів. Ми зв'яжемося з вами для узгодження часу!",
-        );
-        if (step.next) return sendStep(chatId, step.next);
-        return;
-      }
-    } else {
-      sendStep(chatId, step.next);
-      return;
-    }
-
-    keyboard = await getSlotsKeyboard(chatId);
+    const shouldSkip = await handleSlotsStep(chatId, step, answers);
+    if (shouldSkip) return;
+    keyboard = getSlotsKeyboard(chatId);
   } else if (step.options) {
     keyboard = step.options.map((opt, index) => [
       {
@@ -101,7 +84,7 @@ async function sendStep(chatId, stepKey) {
     ]);
   }
 
-  // 4. ВІДПРАВКА
+  // 5. ВІДПРАВКА
   if (step.requestContact) {
     return bot.sendMessage(chatId, step.text, {
       reply_markup: {
@@ -117,18 +100,9 @@ async function sendStep(chatId, stepKey) {
   });
 
   if (stepKey === "slots") {
-    userAnswers[chatId].slotsMessageId = sent.message_id;
+    userAnswers[chatId]._slotsMessageId = sent.message_id;
   }
-  return;
 }
-
-bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  userAnswers[chatId] = {
-    Telegram: msg.from.username ? "@" + msg.from.username : "-",
-  };
-  sendStep(chatId, "start");
-});
 
 bot.on("callback_query", async (query) => {
   const chatId = query.message.chat.id;
@@ -144,7 +118,7 @@ bot.on("callback_query", async (query) => {
 
     if (!userAnswers[chatId].temp_slots) userAnswers[chatId].temp_slots = [];
 
-    const prev = userAnswers[chatId].temp_slots || [];
+    const prev = userAnswers[chatId].temp_slots;
 
     let next;
     if (prev.includes(slot)) {
@@ -155,14 +129,14 @@ bot.on("callback_query", async (query) => {
 
     userAnswers[chatId].temp_slots = next;
 
-    const keyboard = await getSlotsKeyboard(chatId);
+    const keyboard = getSlotsKeyboard(chatId);
 
     try {
       await bot.editMessageReplyMarkup(
         { inline_keyboard: keyboard },
         {
           chat_id: chatId,
-          message_id: query.message.message_id, // ⬅️ ВИПРАВЛЕННЯ: використовуємо message_id з самого query
+          message_id: query.message.message_id,
         },
       );
     } catch (e) {
@@ -174,10 +148,13 @@ bot.on("callback_query", async (query) => {
 
   if (data === "slots_done") {
     userAnswers[chatId][step.saveAs || "Слоти"] =
-      userAnswers[chatId]["temp_slots"].join(", ");
-    delete userAnswers[chatId]["temp_slots"];
-    delete userAnswers[chatId]["slotsMessageId"];
-    delete userAnswers[chatId]["_cachedTeacher"]; // ⬅️ ОЧИСТКА КЕША
+      userAnswers[chatId].temp_slots.join(", ");
+
+    // Очистка временных данных сессии
+    delete userAnswers[chatId].temp_slots;
+    delete userAnswers[chatId]._slotsMessageId;
+    delete userAnswers[chatId]._teacherSlots;
+
     sendStep(chatId, step.next);
     return bot.answerCallbackQuery(query.id);
   }
@@ -219,7 +196,6 @@ bot.on("message", async (msg) => {
     userAnswers[chatId][step.saveAs || "Телефон"] = msg.contact.phone_number;
     const nextStep = step.next;
 
-    // Видаляємо фізичну кнопку телефону наступним повідомленням
     if (flow[nextStep]?.end) {
       await bot.sendMessage(chatId, flow[nextStep].text, {
         reply_markup: { remove_keyboard: true },
@@ -231,6 +207,34 @@ bot.on("message", async (msg) => {
         reply_markup: { remove_keyboard: true },
       });
       sendStep(chatId, nextStep);
+    }
+    return;
+  }
+
+  // Обробка фото (скріншот оплати)
+  if (msg.photo && step.acceptPhoto) {
+    // Берем фото с наивысшим разрешением (последнее в массиве)
+    const photo = msg.photo[msg.photo.length - 1];
+    const photoCaption = msg.caption || "(без підпису)";
+
+    // Сохраняем file_id фотографии
+    userAnswers[chatId][step.saveAs] = `[Скріншот] ${photoCaption}`;
+    userAnswers[chatId]._paymentPhotoId = photo.file_id;
+
+    // Отправляем фото админу сразу
+    // await bot.sendPhoto(ADMIN_CHAT_ID, photo.file_id, {
+    //   caption: `💳 Підтвердження оплати від ${userAnswers[chatId].Telegram || "користувача"}`,
+    // });
+
+    if (flow[step.next]?.end) {
+      await bot.sendMessage(chatId, flow[step.next].text, {
+        reply_markup: { remove_keyboard: true },
+      });
+      sendResultsToAdmin(chatId);
+      delete userState[chatId];
+    } else {
+      await bot.sendMessage(chatId, "Дякуємо за підтвердження! Продовжуємо...");
+      sendStep(chatId, step.next);
     }
     return;
   }
@@ -250,26 +254,167 @@ bot.on("message", async (msg) => {
   }
 });
 
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  userAnswers[chatId] = {
+    Telegram: msg.from.username ? "@" + msg.from.username : "-",
+  };
+  sendStep(chatId, "start");
+});
+
+bot.onText(/\/refresh/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  if (chatId.toString() !== ADMIN_CHAT_ID) {
+    return bot.sendMessage(chatId, "⛔ У вас немає прав для цієї команди");
+  }
+
+  try {
+    await bot.sendMessage(chatId, "🔄 Оновлюю кеш...");
+    await refreshCache();
+    bot.sendMessage(chatId, "✅ Кеш успішно оновлено!");
+  } catch (err) {
+    console.error("Refresh error:", err);
+    bot.sendMessage(chatId, "❌ Помилка оновлення кешу");
+  }
+});
+
+bot.onText(/\/myid/, (msg) => {
+  bot.sendMessage(msg.chat.id, `🆔 Ваш chat ID: \`${msg.chat.id}\``, {
+    parse_mode: "Markdown",
+  });
+});
+
+// ============= ДОПОМІЖНІ ФУНКЦІЇ =============
+
+async function handleDynamicRates(step) {
+  const rates = await getRates();
+
+  const rateMap = {
+    r45f: `Перший урок “Лише ти 45”`,
+    r90f: `Перший урок “Лише ти 90”`,
+    r45: `Тариф “Лише ти 45”`,
+    r90: `Тариф “Лише ти 90”`,
+  };
+
+  const foundRates = {};
+  for (const [key, searchText] of Object.entries(rateMap)) {
+    foundRates[key] = rates.find((r) => r.name.includes(searchText));
+  }
+
+  const { r45f, r90f, r45, r90 } = foundRates;
+
+  step.text = `Можемо запропонувати два варіанти індивідуальних занять:
+- ${r45.name} становить: ${r45.price} грн за кожні ${r45.lessons} уроків по 45 хвилин, заняття відбуваються 2 рази на тиждень. Вартість пробного уроку - ${r45f.price} грн.
+- ${r90.name} становить: ${r90.price} грн за кожні ${r90.lessons} уроків по 90 хвилин, заняття відбуваються 2 рази на тиждень. Вартість пробного уроку - ${r90f.price} грн.`;
+}
+
+async function handleDynamicPayment(step, chatId) {
+  const rates = await getRates();
+
+  const rateMap = {
+    r45f: `Перший урок “Лише ти 45”`,
+    r90f: `Перший урок “Лише ти 90”`,
+    rGroupFirst: `Перший урок в групі`,
+  };
+
+  const foundRates = {};
+  for (const [key, searchText] of Object.entries(rateMap)) {
+    foundRates[key] = rates.find((r) => r.name.includes(searchText));
+  }
+
+  const { r45f, r90f, rGroupFirst } = foundRates;
+
+  const answers = userAnswers[chatId];
+
+  const price =
+    answers["Учбовий формат"] === "Міні-група"
+      ? rGroupFirst.price
+      : answers["Тривалість"] === "45 хв"
+        ? r45f.price
+        : r90f.price;
+
+  step.text = `Добре 💙\nВам необхідно внести оплату першого уроку ${price} грн ФОП Лещенко С.Б. рахунок UA523220010000026006300055066, ЄДРПОУ: 2992609434, призначення платежу: оплата уроків.\n\nМаємо зауважити, що місце за вами бронюється після оплати першого уроку, в інакшому випадку - хтось може бути спритнішим і його забрати 🌝\nПісля оплати напишіть, будь ласка, прізвище та ім'я платника чи надішліть скрін ☺️`;
+}
+
+async function handleTeachersStep(chatId, step, answers) {
+  const teachers = await getTeachers(answers.Мова);
+  const duration = answers.Тривалість;
+  const slotsKey = duration === "45 хв" ? "slots45" : "slots90";
+
+  const availableTeachers = teachers.filter((t) => t[slotsKey]);
+
+  if (availableTeachers.length === 0) {
+    await bot.sendMessage(
+      chatId,
+      "На жаль, зараз немає доступних вчителів для обраних параметрів. Ми зв'яжемося з вами найближчим часом!",
+    );
+    if (step.next) await sendStep(chatId, step.next);
+    return true; // shouldSkip
+  }
+
+  step.options = availableTeachers.map((t) => ({
+    label: t.name,
+    value: t.name,
+  }));
+
+  return false; // don't skip
+}
+
+async function handleSlotsStep(chatId, step, answers) {
+  const teachers = await getTeachers(answers.Мова);
+  const teacher = teachers.find((t) => t.name === answers.Вчитель);
+
+  if (!teacher) {
+    if (step.next) await sendStep(chatId, step.next);
+    return true; // shouldSkip
+  }
+
+  const duration = answers.Тривалість;
+  const slotsKey = duration === "45 хв" ? "slots45" : "slots90";
+  const raw = teacher[slotsKey];
+
+  if (!raw?.trim()) {
+    await bot.sendMessage(
+      chatId,
+      "На жаль, у обраного вчителя зараз немає доступних слотів. Ми зв'яжемося з вами для узгодження часу!",
+    );
+    if (step.next) await sendStep(chatId, step.next);
+    return true; // shouldSkip
+  }
+
+  // Сохраняем слоты для текущего пользователя (не кеш, а данные сессии)
+  userAnswers[chatId]._teacherSlots = raw;
+
+  return false; // don't skip
+}
+
 function sendResultsToAdmin(chatId) {
   const answers = userAnswers[chatId];
   let message = "📝 Нова анкета:\n\n";
+
+  // Фильтруем служебные поля
   for (const key in answers) {
+    if (key.startsWith("_") || key === "temp_slots") {
+      continue;
+    }
     message += `<b>${key}</b>: ${answers[key]}\n`;
   }
+
   bot.sendMessage(ADMIN_CHAT_ID, message, { parse_mode: "HTML" });
+
+  // ⬇️ НОВОЕ: Если есть скриншот - отправляем его отдельно
+  if (answers._paymentPhotoId) {
+    bot.sendPhoto(ADMIN_CHAT_ID, answers._paymentPhotoId, {
+      caption: "💳 Скріншот підтвердження оплати",
+    });
+  }
 }
 
-async function getSlotsKeyboard(chatId) {
+function getSlotsKeyboard(chatId) {
   if (!userAnswers[chatId]) return [];
 
-  // ⬅️ ИСПОЛЬЗУЕМ КЕШИРОВАННЫЕ ДАННЫЕ
-  const teacher = userAnswers[chatId]._cachedTeacher;
-
-  if (!teacher) return [];
-
-  const duration = userAnswers[chatId]["Тривалість"];
-  const raw = duration === "45 хв" ? teacher.slots45 : teacher.slots90;
-
+  const raw = userAnswers[chatId]._teacherSlots;
   if (!raw) return [];
 
   const slots = raw.split(",").map((s) => s.trim());

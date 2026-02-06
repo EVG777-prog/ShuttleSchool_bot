@@ -64,7 +64,7 @@
       { "label": "ПН 11:45", "value": "ПН 11:45" }
     ],
     "saveAs": "Слоти",
-    "next": "level"
+    "next": "payment"
   },
 
   "level": {
@@ -78,6 +78,14 @@
       }
     ],
     "saveAs": "Рівень",
+    "next": "contact"
+  },
+
+  "payment": {
+    "text": "dynamic:payment",
+    "acceptPhoto": true,
+    "freeInput": true,
+    "saveAs": "Підтвердження оплати",
     "next": "contact"
   },
 
