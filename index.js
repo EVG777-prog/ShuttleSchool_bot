@@ -5,6 +5,7 @@ const {
   initGoogle,
   getRates,
   getTeachers,
+  getLessons,
   refreshCache,
 } = require("./google_docs");
 
@@ -17,10 +18,6 @@ const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 const userState = {};
 const userAnswers = {};
-
-bot.on("message", (msg) => {
-  console.log(msg.chat.id, msg.from.username);
-});
 
 bot.getMe().then((botInfo) => {
   console.log("Бот підключений:", botInfo.username);
@@ -53,26 +50,40 @@ async function sendStep(chatId, stepKey) {
   userState[chatId] = stepKey;
 
   // 2. ДИНАМІЧНІ ТЕКСТИ (Тарифи)
-  if (step.text === "dynamic:individual") {
-    await handleDynamicRates(step);
+  if (stepKey === "individual_tariff") {
+    await handleIndividualTariff(step);
   }
 
   // 2.5 ДИНАМІЧНІ ТЕКСТИ (Платіж першого уроку)
-  if (step.text === "dynamic:payment") {
-    await handleDynamicPayment(step, chatId);
+  if (stepKey === "payment") {
+    console.log(answers);
+    if (
+      answers["Група з нуля"] === "Ні" ||
+      (answers["Учбовий формат"] === "Індивідуально" &&
+        (!answers["Слоти"] || answers["Слоти"].trim() === ""))
+    ) {
+      return sendStep(chatId, step.next);
+    }
+    await handlePayment(step, chatId);
+  }
+
+  // 2.7 ДИНАМІЧНІ ТЕКСТИ (Групи з нуля)
+  if (stepKey === "zero_groups") {
+    await handleZeroGroups(chatId, step, answers);
   }
 
   // 3. ПІДГОТОВКА ОПЦІЙ (Вчителі)
-  if (stepKey === "teachers") {
-    const shouldSkip = await handleTeachersStep(chatId, step, answers);
+  if (stepKey === "individual_teachers") {
+    const shouldSkip = await handleIndividualTeachers(chatId, step, answers);
     if (shouldSkip) return;
   }
 
   // 4. ПІДГОТОВКА КЛАВІАТУРИ
   let keyboard = [];
 
-  if (stepKey === "slots") {
-    const shouldSkip = await handleSlotsStep(chatId, step, answers);
+  if (stepKey === "individual_slots") {
+    console.log(`Индивидуальные слоты`);
+    const shouldSkip = await handleIndividualSlots(chatId, step, answers);
     if (shouldSkip) return;
     keyboard = getSlotsKeyboard(chatId);
   } else if (step.options) {
@@ -99,7 +110,7 @@ async function sendStep(chatId, stepKey) {
     reply_markup: { inline_keyboard: keyboard },
   });
 
-  if (stepKey === "slots") {
+  if (stepKey === "individual_slots") {
     userAnswers[chatId]._slotsMessageId = sent.message_id;
   }
 }
@@ -110,8 +121,11 @@ bot.on("callback_query", async (query) => {
   const stepKey = userState[chatId];
   const step = flow[stepKey];
 
+  console.log(`🔔 Callback: data="${data}", step="${stepKey}"`); // ДОБАВИТЬ ЭТУ СТРОКУ
+
   // Мультиселект слотів
   if (data.startsWith("select_slot:")) {
+    console.log(`📍 Обробка select_slot`); // ДОБАВИТЬ
     if (!userAnswers[chatId]) return bot.answerCallbackQuery(query.id);
 
     const slot = data.split("slot:")[1];
@@ -147,6 +161,7 @@ bot.on("callback_query", async (query) => {
   }
 
   if (data === "slots_done") {
+    console.log(`📍 Обробка slots_done`); // ДОБАВИТЬ
     userAnswers[chatId][step.saveAs || "Слоти"] =
       userAnswers[chatId].temp_slots.join(", ");
 
@@ -159,10 +174,13 @@ bot.on("callback_query", async (query) => {
     return bot.answerCallbackQuery(query.id);
   }
 
+  console.log(`📍 Перевірка звичайної опції`); // ДОБАВИТЬ
   // Звичайна логіка кнопок
   const option =
     step?.options?.find((o) => o.value === data) ||
     (data.startsWith("info_") ? step?.options[data.split("_")[1]] : null);
+
+  console.log(`📍 Знайдена опція:`, option); // ДОБАВИТЬ
   if (!option) return bot.answerCallbackQuery(query.id);
 
   if (data.startsWith("info_")) {
@@ -170,8 +188,14 @@ bot.on("callback_query", async (query) => {
     return bot.answerCallbackQuery(query.id);
   }
 
-  if (step.saveAs) userAnswers[chatId][step.saveAs] = option.value;
+  console.log(`📍 Збереження відповіді`); // ДОБАВИТЬ
+
+  if (step.saveAs) {
+    userAnswers[chatId][step.saveAs] = option.value;
+    console.log(`✅ Збережено ${step.saveAs}:`, option.value); // ДОБАВИТЬ
+  }
   const nextStep = option.next || step.next;
+  console.log(`➡️ Перехід на крок:`, nextStep); // ДОБАВИТЬ
 
   if (flow[nextStep]?.end) {
     await bot.sendMessage(chatId, flow[nextStep].text, {
@@ -287,7 +311,7 @@ bot.onText(/\/myid/, (msg) => {
 
 // ============= ДОПОМІЖНІ ФУНКЦІЇ =============
 
-async function handleDynamicRates(step) {
+async function handleIndividualTariff(step) {
   const rates = await getRates();
 
   const rateMap = {
@@ -309,7 +333,8 @@ async function handleDynamicRates(step) {
 - ${r90.name} становить: ${r90.price} грн за кожні ${r90.lessons} уроків по 90 хвилин, заняття відбуваються 2 рази на тиждень. Вартість пробного уроку - ${r90f.price} грн.`;
 }
 
-async function handleDynamicPayment(step, chatId) {
+async function handlePayment(step, chatId) {
+  const answers = userAnswers[chatId];
   const rates = await getRates();
 
   const rateMap = {
@@ -325,8 +350,6 @@ async function handleDynamicPayment(step, chatId) {
 
   const { r45f, r90f, rGroupFirst } = foundRates;
 
-  const answers = userAnswers[chatId];
-
   const price =
     answers["Учбовий формат"] === "Міні-група"
       ? rGroupFirst.price
@@ -337,7 +360,59 @@ async function handleDynamicPayment(step, chatId) {
   step.text = `Добре 💙\nВам необхідно внести оплату першого уроку ${price} грн ФОП Лещенко С.Б. рахунок UA523220010000026006300055066, ЄДРПОУ: 2992609434, призначення платежу: оплата уроків.\n\nМаємо зауважити, що місце за вами бронюється після оплати першого уроку, в інакшому випадку - хтось може бути спритнішим і його забрати 🌝\nПісля оплати напишіть, будь ласка, прізвище та ім'я платника чи надішліть скрін ☺️`;
 }
 
-async function handleTeachersStep(chatId, step, answers) {
+async function handleZeroGroups(chatId, step, answers) {
+  const lessons = await getLessons(answers.Мова);
+  const rates = await getRates();
+
+  const priceFirst = rates.filter(
+    (rate) => rate.name === "Перший урок в групі",
+  )[0].price;
+
+  const zeroLessons = lessons.filter((t) => t.level === "з нуля");
+
+  if (zeroLessons.length === 1) {
+    const zeroLesson = zeroLessons[0];
+
+    const rate = rates.filter((rate) => rate.name === zeroLesson.rate)[0];
+
+    step.text = `Ми запускаємо онлайн міні-групу з нуля:
+🗓 розклад: 
+       - група №${zeroLesson.groupNumber} - ${zeroLesson.schedule} (старт ${zeroLesson.start})
+    
+🕒 час київський
+
+Це живі он-лайн уроки з викладачем з використанням сучасної комунікативної методики;
+
+📚 ${zeroLesson.rate}:
+кожні ${rate.lessons} занять — ${rate.price} грн.
+${rate.duration}
+
+Спробуйте перше заняття в цій групі лише за ${priceFirst} грн
+— далі вирішуйте, чи продовжуєте ви навчання!
+
+📩 Бажаєте записатись на перший урок?`;
+
+    step.options = [
+      { label: "Так", value: zeroLessons[0].groupNumber },
+      { label: "Ні", value: "Ні" },
+    ];
+  } else if (zeroLessons.length > 1) {
+    step.text = `Ми запускаємо онлайн міні-групи з нуля:
+
+Це живі он-лайн уроки з викладачем з використанням сучасної комунікативної методики;
+
+Спробуйте перше заняття в групі лише за ${priceFirst} грн
+— далі вирішуйте, чи продовжуєте ви навчання!
+
+📩 Бажаєте записатись на перший урок якої групи?`;
+    step.options = zeroLessons.map((l) => ({
+      label: `${l.schedule} старт з ${l.start}`,
+      value: l.groupNumber,
+    }));
+  }
+}
+
+async function handleIndividualTeachers(chatId, step, answers) {
   const teachers = await getTeachers(answers.Мова);
   const duration = answers.Тривалість;
   const slotsKey = duration === "45 хв" ? "slots45" : "slots90";
@@ -357,11 +432,13 @@ async function handleTeachersStep(chatId, step, answers) {
     label: t.name,
     value: t.name,
   }));
-
   return false; // don't skip
 }
 
-async function handleSlotsStep(chatId, step, answers) {
+async function handleIndividualSlots(chatId, step, answers) {
+  console.log(`🎯 handleIndividualSlots викликано`);
+  console.log(`   Вчитель: ${answers.Вчитель}`);
+  console.log(`   Тривалість: ${answers.Тривалість}`);
   const teachers = await getTeachers(answers.Мова);
   const teacher = teachers.find((t) => t.name === answers.Вчитель);
 

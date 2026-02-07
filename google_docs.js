@@ -10,6 +10,7 @@ let isReady = false;
 const cache = {
   rates: null,
   teachers: {}, // { "Французька": [...], "Іспанська": [...] }
+  lessons: {},
   lastUpdate: null,
 };
 
@@ -126,6 +127,56 @@ async function getTeachers(lang) {
   return teachers;
 }
 
+// ============= ЛЕКЦІЇ =============
+async function getLessons(lang) {
+  // Якщо є в кеші і кеш валідний - повертаємо
+  if (cache.lessons[lang] && isCacheValid()) {
+    console.log(`📦 Lessons (${lang}) from cache`);
+    return cache.lessons[lang];
+  }
+
+  console.log(`🌐 Fetching lessons (${lang}) from Google Sheets...`);
+
+  const map = {
+    Французька: "French_lessons",
+    Іспанська: "Spanish_lessons",
+    Італійська: "Italian_lessons",
+  };
+
+  const sheetName = map[lang];
+  if (!sheetName) return [];
+
+  const sheet = doc.sheetsByTitle[sheetName];
+  if (!sheet) {
+    console.error(`❌ Sheet "${sheetName}" not found`);
+    return [];
+  }
+
+  const rows = await sheet.getRows();
+
+  const lessons = rows
+    .map((row) => {
+      const data = row._rawData;
+      if (!data || data.length < 3) return null;
+
+      return {
+        level: data[0],
+        schedule: data[1],
+        teacher: data[2],
+        rate: data[3],
+        start: data[4],
+        groupNumber: data[5],
+      };
+    })
+    .filter(Boolean);
+
+  // Зберігаємо в кеш
+  cache.lessons[lang] = lessons;
+  cache.lastUpdate = Date.now();
+
+  return lessons;
+}
+
 // ============= ФОРСОВАНА ОНОВЛЕННЯ КЕШУ =============
 async function refreshCache() {
   console.log("🔄 Force refreshing cache...");
@@ -138,6 +189,11 @@ async function refreshCache() {
     getTeachers("Іспанська"),
     getTeachers("Італійська"),
   ]);
+  await Promise.all([
+    getLessons("Французька"),
+    getLessons("Іспанська"),
+    getLessons("Італійська"),
+  ]);
 
   console.log("✅ Cache refreshed");
 }
@@ -146,6 +202,7 @@ module.exports = {
   initGoogle,
   getRates,
   getTeachers,
+  getLessons,
   refreshCache,
   invalidateCache,
 };
