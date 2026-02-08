@@ -370,41 +370,39 @@ async function handleZeroGroups(chatId, step, answers) {
 
   const zeroLessons = lessons.filter((t) => t.level === "з нуля");
 
-  if (zeroLessons.length === 1) {
-    const zeroLesson = zeroLessons[0];
+  const textLessons = zeroLessons
+    .map(
+      (l) => `  - група №${l.groupNumber} - ${l.schedule} (старт ${l.start})`,
+    )
+    .join("\n");
 
-    const rate = rates.filter((rate) => rate.name === zeroLesson.rate)[0];
+  console.log(textLessons);
 
-    step.text = `Ми запускаємо онлайн міні-групу з нуля:
+  const rate = rates.filter((rate) => rate.name === zeroLessons[0].rate)[0];
+
+  step.text = `Ми запускаємо онлайн міні-групи з нуля:
 🗓 розклад: 
-       - група №${zeroLesson.groupNumber} - ${zeroLesson.schedule} (старт ${zeroLesson.start})
+${textLessons}
     
 🕒 час київський
 
 Це живі он-лайн уроки з викладачем з використанням сучасної комунікативної методики;
 
-📚 ${zeroLesson.rate}:
+📚 ${zeroLessons[0].rate}:
 кожні ${rate.lessons} занять — ${rate.price} грн.
 ${rate.duration}
 
-Спробуйте перше заняття в цій групі лише за ${priceFirst} грн
+Спробуйте перше заняття лише за ${priceFirst} грн
 — далі вирішуйте, чи продовжуєте ви навчання!
 
 📩 Бажаєте записатись на перший урок?`;
 
+  if (zeroLessons.length === 1) {
     step.options = [
       { label: "Так", value: zeroLessons[0].groupNumber },
       { label: "Ні", value: "Ні" },
     ];
   } else if (zeroLessons.length > 1) {
-    step.text = `Ми запускаємо онлайн міні-групи з нуля:
-
-Це живі он-лайн уроки з викладачем з використанням сучасної комунікативної методики;
-
-Спробуйте перше заняття в групі лише за ${priceFirst} грн
-— далі вирішуйте, чи продовжуєте ви навчання!
-
-📩 Бажаєте записатись на перший урок якої групи?`;
     step.options = zeroLessons.map((l) => ({
       label: `${l.schedule} старт з ${l.start}`,
       value: l.groupNumber,
