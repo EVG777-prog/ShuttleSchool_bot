@@ -1,0 +1,341 @@
+{
+  "test_start": {
+    "text": "Вам необхідно відповісти на 33 питання для визначення вашого рівня",
+    "autoNext": true,
+    "next": "test_q1"
+  },
+  "test_q1": {
+    "text": "▸ 1/33\n\n¿___ te llamas?",
+    "options": [
+      { "label": "Cómo", "value": "correct" },
+      { "label": "Qué", "value": "wrong" },
+      { "label": "Dónde", "value": "wrong" },
+      { "label": "Cuándo", "value": "wrong" }
+    ],
+    "next": "test_q2"
+  },
+  "test_q2": {
+    "text": "▸ 2/33\n\nYo ___ estudiante.",
+    "options": [
+      { "label": "soy", "value": "correct" },
+      { "label": "estoy", "value": "wrong" },
+      { "label": "tengo", "value": "wrong" },
+      { "label": "sé", "value": "wrong" }
+    ],
+    "next": "test_q3"
+  },
+  "test_q3": {
+    "text": "▸ 3/33\n\n¿Cuántos años ___ tú?",
+    "options": [
+      { "label": "tienes", "value": "correct" },
+      { "label": "eres", "value": "wrong" },
+      { "label": "estás", "value": "wrong" },
+      { "label": "haces", "value": "wrong" }
+    ],
+    "next": "test_q4"
+  },
+  "test_q4": {
+    "text": "▸ 4/33\n\n___ gusta el café.",
+    "options": [
+      { "label": "Me", "value": "correct" },
+      { "label": "Yo", "value": "wrong" },
+      { "label": "Mi", "value": "wrong" },
+      { "label": "Mí", "value": "wrong" }
+    ],
+    "next": "test_q5"
+  },
+  "test_q5": {
+    "text": "▸ 5/33\n\n¿De dónde ___?",
+    "options": [
+      { "label": "eres", "value": "correct" },
+      { "label": "estás", "value": "wrong" },
+      { "label": "tienes", "value": "wrong" },
+      { "label": "vas", "value": "wrong" }
+    ],
+    "next": "test_q6"
+  },
+  "test_q6": {
+    "text": "▸ 6/33\n\nElla ___ en Madrid.",
+    "options": [
+      { "label": "vive", "value": "correct" },
+      { "label": "vivé", "value": "wrong" },
+      { "label": "viven", "value": "wrong" },
+      { "label": "vivemos", "value": "wrong" }
+    ],
+    "next": "test_q7"
+  },
+  "test_q7": {
+    "text": "▸ 7/33\n\n___ lunes voy al gimnasio.",
+    "options": [
+      { "label": "Los", "value": "correct" },
+      { "label": "El", "value": "wrong" },
+      { "label": "Un", "value": "wrong" },
+      { "label": "Unos", "value": "wrong" }
+    ],
+    "next": "test_q8"
+  },
+  "test_q8": {
+    "text": "▸ 8/33\n\n¿___ está el baño?",
+    "options": [
+      { "label": "Dónde", "value": "correct" },
+      { "label": "Qué", "value": "wrong" },
+      { "label": "Cómo", "value": "wrong" },
+      { "label": "Cuándo", "value": "wrong" }
+    ],
+    "next": "test_q9"
+  },
+  "test_q9": {
+    "text": "▸ 9/33\n\nNosotros ___ al cine ayer.",
+    "options": [
+      { "label": "fuimos", "value": "correct" },
+      { "label": "vamos", "value": "wrong" },
+      { "label": "íbamos", "value": "wrong" },
+      { "label": "iremos", "value": "wrong" }
+    ],
+    "next": "test_q10"
+  },
+  "test_q10": {
+    "text": "▸ 10/33\n\n¿A qué hora ___ el tren?",
+    "options": [
+      { "label": "sale", "value": "correct" },
+      { "label": "salen", "value": "wrong" },
+      { "label": "salgo", "value": "wrong" },
+      { "label": "salimos", "value": "wrong" }
+    ],
+    "next": "test_q11"
+  },
+  "test_q11": {
+    "text": "▸ 11/33\n\nCuando era niño, ___ mucho.",
+    "options": [
+      { "label": "jugaba", "value": "correct" },
+      { "label": "jugué", "value": "wrong" },
+      { "label": "jugaré", "value": "wrong" },
+      { "label": "juego", "value": "wrong" }
+    ],
+    "next": "test_q12"
+  },
+  "test_q12": {
+    "text": "▸ 12/33\n\nEste es el libro ___ compré ayer.",
+    "options": [
+      { "label": "que", "value": "correct" },
+      { "label": "quien", "value": "wrong" },
+      { "label": "cual", "value": "wrong" },
+      { "label": "donde", "value": "wrong" }
+    ],
+    "next": "test_q13"
+  },
+  "test_q13": {
+    "text": "▸ 13/33\n\nSi tuviera dinero, ___ un coche.",
+    "options": [
+      { "label": "compraría", "value": "correct" },
+      { "label": "compro", "value": "wrong" },
+      { "label": "compré", "value": "wrong" },
+      { "label": "compraré", "value": "wrong" }
+    ],
+    "next": "test_q14"
+  },
+  "test_q14": {
+    "text": "▸ 14/33\n\nLlevo dos horas ___ tu llamada.",
+    "options": [
+      { "label": "esperando", "value": "correct" },
+      { "label": "esperar", "value": "wrong" },
+      { "label": "esperé", "value": "wrong" },
+      { "label": "espero", "value": "wrong" }
+    ],
+    "next": "test_q15"
+  },
+  "test_q15": {
+    "text": "▸ 15/33\n\nMe ___ que llegues tarde.",
+    "options": [
+      { "label": "molesta", "value": "correct" },
+      { "label": "molesto", "value": "wrong" },
+      { "label": "molestas", "value": "wrong" },
+      { "label": "molestan", "value": "wrong" }
+    ],
+    "next": "test_q16"
+  },
+  "test_q16": {
+    "text": "▸ 16/33\n\nEl informe ___ por el director.",
+    "options": [
+      { "label": "fue firmado", "value": "correct" },
+      { "label": "firmó", "value": "wrong" },
+      { "label": "ha firmado", "value": "wrong" },
+      { "label": "firmaba", "value": "wrong" }
+    ],
+    "next": "test_q17"
+  },
+  "test_q17": {
+    "text": "▸ 17/33\n\nOjalá ___ buen tiempo mañana.",
+    "options": [
+      { "label": "haga", "value": "correct" },
+      { "label": "hace", "value": "wrong" },
+      { "label": "hará", "value": "wrong" },
+      { "label": "hacía", "value": "wrong" }
+    ],
+    "next": "test_q18"
+  },
+  "test_q18": {
+    "text": "▸ 18/33\n\nNo creo que él ___ razón.",
+    "options": [
+      { "label": "tenga", "value": "correct" },
+      { "label": "tiene", "value": "wrong" },
+      { "label": "tendrá", "value": "wrong" },
+      { "label": "tenía", "value": "wrong" }
+    ],
+    "next": "test_q19"
+  },
+  "test_q19": {
+    "text": "▸ 19/33\n\nSi hubiera sabido, no ___ venido.",
+    "options": [
+      { "label": "habría", "value": "correct" },
+      { "label": "había", "value": "wrong" },
+      { "label": "habrá", "value": "wrong" },
+      { "label": "haya", "value": "wrong" }
+    ],
+    "next": "test_q20"
+  },
+  "test_q20": {
+    "text": "▸ 20/33\n\nLe pidió que ___ la verdad.",
+    "options": [
+      { "label": "dijera", "value": "correct" },
+      { "label": "diga", "value": "wrong" },
+      { "label": "dice", "value": "wrong" },
+      { "label": "dirá", "value": "wrong" }
+    ],
+    "next": "test_q21"
+  },
+  "test_q21": {
+    "text": "▸ 21/33\n\nA pesar de ___ cansado, siguió trabajando.",
+    "options": [
+      { "label": "estar", "value": "correct" },
+      { "label": "ser", "value": "wrong" },
+      { "label": "estando", "value": "wrong" },
+      { "label": "siendo", "value": "wrong" }
+    ],
+    "next": "test_q22"
+  },
+  "test_q22": {
+    "text": "▸ 22/33\n\nEl proyecto ___ antes del viernes.",
+    "options": [
+      { "label": "habrá sido completado", "value": "correct" },
+      { "label": "será completado", "value": "wrong" },
+      { "label": "fue completado", "value": "wrong" },
+      { "label": "ha completado", "value": "wrong" }
+    ],
+    "next": "test_q23"
+  },
+  "test_q23": {
+    "text": "▸ 23/33\n\nCuanto más estudias, ___ aprendes.",
+    "options": [
+      { "label": "más", "value": "correct" },
+      { "label": "mucho", "value": "wrong" },
+      { "label": "mejor", "value": "wrong" },
+      { "label": "tanto", "value": "wrong" }
+    ],
+    "next": "test_q24"
+  },
+  "test_q24": {
+    "text": "▸ 24/33\n\nMe ___ que me hubieras avisado antes.",
+    "options": [
+      { "label": "hubiera gustado", "value": "correct" },
+      { "label": "gustaría", "value": "wrong" },
+      { "label": "gustó", "value": "wrong" },
+      { "label": "habría gustado", "value": "wrong" }
+    ],
+    "next": "test_q25"
+  },
+  "test_q25": {
+    "text": "▸ 25/33\n\nNo bien ___ la puerta, sonó el teléfono.",
+    "options": [
+      { "label": "cerré", "value": "correct" },
+      { "label": "cerraba", "value": "wrong" },
+      { "label": "cerrara", "value": "wrong" },
+      { "label": "cerraré", "value": "wrong" }
+    ],
+    "next": "test_q26"
+  },
+  "test_q26": {
+    "text": "▸ 26/33\n\nEs hora de que ___ una decisión.",
+    "options": [
+      { "label": "tomes", "value": "correct" },
+      { "label": "tomas", "value": "wrong" },
+      { "label": "tomarás", "value": "wrong" },
+      { "label": "tomaste", "value": "wrong" }
+    ],
+    "next": "test_q27"
+  },
+  "test_q27": {
+    "text": "▸ 27/33\n\nEl hecho de que no ___ no significa que no le importe.",
+    "options": [
+      { "label": "llame", "value": "correct" },
+      { "label": "llama", "value": "wrong" },
+      { "label": "llamó", "value": "wrong" },
+      { "label": "llamará", "value": "wrong" }
+    ],
+    "next": "test_q28"
+  },
+  "test_q28": {
+    "text": "▸ 28/33\n\nPor mucho que ___, no lo conseguirás.",
+    "options": [
+      { "label": "lo intentes", "value": "correct" },
+      { "label": "lo intentas", "value": "wrong" },
+      { "label": "lo intentarás", "value": "wrong" },
+      { "label": "lo intentaste", "value": "wrong" }
+    ],
+    "next": "test_q29"
+  },
+  "test_q29": {
+    "text": "▸ 29/33\n\nSe ruega a los pasajeros que ___ los cinturones.",
+    "options": [
+      { "label": "abrochen", "value": "correct" },
+      { "label": "abrochan", "value": "wrong" },
+      { "label": "abrocharán", "value": "wrong" },
+      { "label": "abrocharon", "value": "wrong" }
+    ],
+    "next": "test_q30"
+  },
+  "test_q30": {
+    "text": "▸ 30/33\n\nDe ___ antes, habría evitado el problema.",
+    "options": [
+      { "label": "haberlo sabido", "value": "correct" },
+      { "label": "saberlo", "value": "wrong" },
+      { "label": "haberlo saber", "value": "wrong" },
+      { "label": "sabiéndolo", "value": "wrong" }
+    ],
+    "next": "test_q31"
+  },
+  "test_q31": {
+    "text": "▸ 31/33\n\nLa propuesta fue rechazada, ___ sorprendió a todos.",
+    "options": [
+      { "label": "lo que", "value": "correct" },
+      { "label": "que", "value": "wrong" },
+      { "label": "lo cual", "value": "wrong" },
+      { "label": "lo que o lo cual", "value": "wrong" }
+    ],
+    "next": "test_q32"
+  },
+  "test_q32": {
+    "text": "▸ 32/33\n\nAunque ___ razón, no te lo daré.",
+    "options": [
+      { "label": "tengas", "value": "correct" },
+      { "label": "tienes", "value": "wrong" },
+      { "label": "tendrás", "value": "wrong" },
+      { "label": "tuvieras", "value": "wrong" }
+    ],
+    "next": "test_q33"
+  },
+  "test_q33": {
+    "text": "▸ 33/33\n\nNo ___ haber dicho eso delante de todos.",
+    "options": [
+      { "label": "deberías", "value": "correct" },
+      { "label": "debes", "value": "wrong" },
+      { "label": "deberás", "value": "wrong" },
+      { "label": "debiste", "value": "wrong" }
+    ],
+    "next": "test_result"
+  },
+  "test_result": {
+    "text": "🎉 Тест завершено!\n\nПравильних відповідей: {score} з {total}\nВаш рівень: {level}",
+    "next": "end_test"
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "test_start": {
+    "text": "Вам необхідно відповісти на 33 питання для визначення вашого рівня",
+    "autoNext": true,
+    "next": "test_q1"
+  },
+  "test_q1": {
+    "text": "▸ 1/33\nC’est ___ que tu habites?",
+    "options": [
+      { "label": "où", "value": "correct" },
+      { "label": "quand", "value": "wrong" },
+      { "label": "comment", "value": "wrong" },
+      { "label": "pourquoi", "value": "wrong" }
+    ],
+    "next": "test_q2"
+  },
+  "test_q2": {
+    "text": "▸ 2/33\nJe n’ai pas ___, je viens de déjeuner",
+    "options": [
+      { "label": "faim", "value": "correct" },
+      { "label": "froid", "value": "wrong" },
+      { "label": "chaud", "value": "wrong" },
+      { "label": "peur", "value": "wrong" }
+    ],
+    "next": "test_q3"
+  },
+  "test_q3": {
+    "text": "▸ 3/33\nDemain, je vais ___ au travail en bus.",
+    "options": [
+      { "label": "aller", "value": "correct" },
+      { "label": "faire", "value": "wrong" },
+      { "label": "prendre", "value": "wrong" },
+      { "label": "venir", "value": "wrong" }
+    ],
+    "next": "test_q4"
+  },
+  "test_q4": {
+    "text": "▸ 4/33\n___ livre est à toi ?",
+    "options": [
+      { "label": "Ce", "value": "correct" },
+      { "label": "Cet", "value": "wrong" },
+      { "label": "Cette", "value": "wrong" },
+      { "label": "Ces", "value": "wrong" }
+    ],
+    "next": "test_q5"
+  },
+  "test_q5": {
+    "text": "▸ 5/33\nSi tu vas au supermarché, achète ___",
+    "options": [
+      { "label": "du lait", "value": "correct" },
+      { "label": "des clés", "value": "wrong" },
+      { "label": "du courrier", "value": "wrong" },
+      { "label": "des fleurs", "value": "wrong" }
+    ],
+    "next": "test_q6"
+  },
+  "test_q6": {
+    "text": "▸ 6/33\nL’année dernière, nous ___ à Rome.",
+    "options": [
+      { "label": "allons", "value": "wrong" },
+      { "label": "sommes allés", "value": "correct" },
+      { "label": "irions", "value": "wrong" },
+      { "label": "irons", "value": "wrong" }
+    ],
+    "next": "test_q7"
+  },
+  "test_q7": {
+    "text": "▸ 7/33\nTu fais du sport ? — Oui, ___",
+    "options": [
+      { "label": "souvent", "value": "correct" },
+      { "label": "jamais", "value": "wrong" },
+      { "label": "toujours", "value": "wrong" },
+      { "label": "rarement", "value": "wrong" }
+    ],
+    "next": "test_q8"
+  },
+  "test_q8": {
+    "text": "▸ 8/33\nJ’aime ___ films d’action.",
+    "options": [
+      { "label": "tous", "value": "correct" },
+      { "label": "tout", "value": "wrong" },
+      { "label": "toute", "value": "wrong" },
+      { "label": "toutes", "value": "wrong" }
+    ],
+    "next": "test_q9"
+  },
+  "test_q9": {
+    "text": "▸ 9/33\nTu vois Marie ? — Oui, je ___ vois.",
+    "options": [
+      { "label": "la", "value": "correct" },
+      { "label": "le", "value": "wrong" },
+      { "label": "les", "value": "wrong" },
+      { "label": "leur", "value": "wrong" }
+    ],
+    "next": "test_q10"
+  },
+  "test_q10": {
+    "text": "▸ 10/33\nTu commences quand ? — ___ lundi.",
+    "options": [
+      { "label": "À partir de", "value": "correct" },
+      { "label": "Depuis", "value": "wrong" },
+      { "label": "Pendant", "value": "wrong" },
+      { "label": "Jusqu’à", "value": "wrong" }
+    ],
+    "next": "test_q11"
+  },
+  "test_q11": {
+    "text": "▸ 11/33\nJe reviens ___ Portugal demain.",
+    "options": [
+      { "label": "du", "value": "correct" },
+      { "label": "de la", "value": "wrong" },
+      { "label": "des", "value": "wrong" },
+      { "label": "de", "value": "wrong" }
+    ],
+    "next": "test_q12"
+  },
+  "test_q12": {
+    "text": "▸ 12/33\nQu’est-ce qu’il y a ? — ___ et on ne voit rien.",
+    "options": [
+      { "label": "Il y a du brouillard", "value": "correct" },
+      { "label": "Il pleut", "value": "wrong" },
+      { "label": "Il neige", "value": "wrong" },
+      { "label": "Il fait beau", "value": "wrong" }
+    ],
+    "next": "test_q13"
+  },
+  "test_q13": {
+    "text": "▸ 13/33\nQuand j’étais petit, je ___ au tennis.",
+    "options": [
+      { "label": "jouais", "value": "correct" },
+      { "label": "ai joué", "value": "wrong" },
+      { "label": "joue", "value": "wrong" },
+      { "label": "jouerai", "value": "wrong" }
+    ],
+    "next": "test_q14"
+  },
+  "test_q14": {
+    "text": "▸ 14/33\nElle part en stage ___ trois mois.",
+    "options": [
+      { "label": "pour", "value": "correct" },
+      { "label": "depuis", "value": "wrong" },
+      { "label": "en", "value": "wrong" },
+      { "label": "de", "value": "wrong" }
+    ],
+    "next": "test_q15"
+  },
+  "test_q15": {
+    "text": "▸ 15/33\nIl est ___ patient que moi.",
+    "options": [
+      { "label": "plus", "value": "correct" },
+      { "label": "aussi", "value": "wrong" },
+      { "label": "mieux", "value": "wrong" },
+      { "label": "moins", "value": "wrong" }
+    ],
+    "next": "test_q16"
+  },
+  "test_q16": {
+    "text": "▸ 16/33\n___ a appelé hier?",
+    "options": [
+      { "label": "Qui est-ce qui", "value": "correct" },
+      { "label": "Qui est-ce que", "value": "wrong" },
+      { "label": "Qu’est-ce qui", "value": "wrong" },
+      { "label": "Qu’est-ce que", "value": "wrong" }
+    ],
+    "next": "test_q17"
+  },
+  "test_q17": {
+    "text": "▸ 17/33\nJe veux que tu ___ à l’heure.",
+    "options": [
+      { "label": "viennes", "value": "correct" },
+      { "label": "viens", "value": "wrong" },
+      { "label": "viendras", "value": "wrong" },
+      { "label": "venais", "value": "wrong" }
+    ],
+    "next": "test_q18"
+  },
+  "test_q18": {
+    "text": "▸ 18/33\nSi tu venais, ça me ___ plaisir.",
+    "options": [
+      { "label": "ferait", "value": "correct" },
+      { "label": "fait", "value": "wrong" },
+      { "label": "fera", "value": "wrong" },
+      { "label": "faisait", "value": "wrong" }
+    ],
+    "next": "test_q19"
+  },
+  "test_q19": {
+    "text": "▸ 19/33\nLa robe ___ j’ai achetée est chère.",
+    "options": [
+      { "label": "que", "value": "correct" },
+      { "label": "qui", "value": "wrong" },
+      { "label": "dont", "value": "wrong" },
+      { "label": "où", "value": "wrong" }
+    ],
+    "next": "test_q20"
+  },
+  "test_q20": {
+    "text": "▸ 20/33\nJ’ai peur qu’elle ___ son examen.",
+    "options": [
+      { "label": "ait", "value": "correct" },
+      { "label": "a", "value": "wrong" },
+      { "label": "avait", "value": "wrong" },
+      { "label": "aura", "value": "wrong" }
+    ],
+    "next": "test_q21"
+  },
+  "test_q21": {
+    "text": "▸ 21/33\nUne maison ___ donne sur la mer.",
+    "options": [
+      { "label": "qui", "value": "correct" },
+      { "label": "que", "value": "wrong" },
+      { "label": "dont", "value": "wrong" },
+      { "label": "où", "value": "wrong" }
+    ],
+    "next": "test_q22"
+  },
+  "test_q22": {
+    "text": "▸ 22/33\nSi j’avais su, je ___ plus tôt.",
+    "options": [
+      { "label": "serais venu", "value": "correct" },
+      { "label": "viendrais", "value": "wrong" },
+      { "label": "suis venu", "value": "wrong" },
+      { "label": "viens", "value": "wrong" }
+    ],
+    "next": "test_q23"
+  },
+  "test_q23": {
+    "text": "▸ 23/33\nIl a ___ de porter plainte.",
+    "options": [
+      { "label": "menacé", "value": "correct" },
+      { "label": "proposé", "value": "wrong" },
+      { "label": "conseillé", "value": "wrong" },
+      { "label": "demandé", "value": "wrong" }
+    ],
+    "next": "test_q24"
+  },
+  "test_q24": {
+    "text": "▸ 24/33\nMalgré ___ efforts, il a échoué.",
+    "options": [
+      { "label": "ses", "value": "correct" },
+      { "label": "son", "value": "wrong" },
+      { "label": "leurs", "value": "wrong" },
+      { "label": "leur", "value": "wrong" }
+    ],
+    "next": "test_q25"
+  },
+  "test_q25": {
+    "text": "▸ 25/33\nC’est le projet ___ je t’ai parlé.",
+    "options": [
+      { "label": "dont", "value": "correct" },
+      { "label": "que", "value": "wrong" },
+      { "label": "qui", "value": "wrong" },
+      { "label": "où", "value": "wrong" }
+    ],
+    "next": "test_q26"
+  },
+  "test_q26": {
+    "text": "▸ 26/33\nElle travaille ici ___ 2018.",
+    "options": [
+      { "label": "depuis", "value": "correct" },
+      { "label": "pendant", "value": "wrong" },
+      { "label": "pour", "value": "wrong" },
+      { "label": "en", "value": "wrong" }
+    ],
+    "next": "test_q27"
+  },
+  "test_q27": {
+    "text": "▸ 27/33\nIl parle comme ___ expert.",
+    "options": [
+      { "label": "un", "value": "correct" },
+      { "label": "le", "value": "wrong" },
+      { "label": "des", "value": "wrong" },
+      { "label": "du", "value": "wrong" }
+    ],
+    "next": "test_q28"
+  },
+  "test_q28": {
+    "text": "▸ 28/33\nIl faut ___ avant de décider.",
+    "options": [
+      { "label": "réfléchir", "value": "correct" },
+      { "label": "réfléchir à", "value": "wrong" },
+      { "label": "réfléchir de", "value": "wrong" },
+      { "label": "réfléchir sur", "value": "wrong" }
+    ],
+    "next": "test_q29"
+  },
+  "test_q29": {
+    "text": "▸ 29/33\nCe discours est très ___",
+    "options": [
+      { "label": "pertinent", "value": "correct" },
+      { "label": "violent", "value": "wrong" },
+      { "label": "banal", "value": "wrong" },
+      { "label": "fragile", "value": "wrong" }
+    ],
+    "next": "test_q30"
+  },
+  "test_q30": {
+    "text": "▸ 30/33\nSes propos étaient totalement ___",
+    "options": [
+      { "label": "excessifs", "value": "correct" },
+      { "label": "nuancés", "value": "wrong" },
+      { "label": "subtils", "value": "wrong" },
+      { "label": "précis", "value": "wrong" }
+    ],
+    "next": "test_q31"
+  },
+  "test_q31": {
+    "text": "▸ 31/33\nUne décision irrévocable est",
+    "options": [
+      { "label": "définitive", "value": "correct" },
+      { "label": "temporaire", "value": "wrong" },
+      { "label": "incertaine", "value": "wrong" },
+      { "label": "progressive", "value": "wrong" }
+    ],
+    "next": "test_q32"
+  },
+  "test_q32": {
+    "text": "▸ 32/33\nIl a répondu d’un ton ___",
+    "options": [
+      { "label": "mesuré", "value": "correct" },
+      { "label": "brutal", "value": "wrong" },
+      { "label": "hésitant", "value": "wrong" },
+      { "label": "neutre", "value": "wrong" }
+    ],
+    "next": "test_q33"
+  },
+  "test_q33": {
+    "text": "▸ 33/33\nCette mesure vise à ___ les inégalités",
+    "options": [
+      { "label": "réduire", "value": "correct" },
+      { "label": "créer", "value": "wrong" },
+      { "label": "maintenir", "value": "wrong" },
+      { "label": "ignorer", "value": "wrong" }
+    ],
+    "next": "test_result"
+  },
+
+  "test_result": {
+    "text": "Дякуємо 😌 Ваш результат: {score} з {total} правильних відповідей!\nВаш рівень: {level}\n\nНаш менеджер звʼяжиться з вами і запропонує варіанти відповідно до вашого рівня. Гарного дня 😌",
+    "next": "end"
+  }
+}
