@@ -31,8 +31,8 @@ bot.on("message", async (msg) => {
     if (!lang) return askLanguage(chatId);
     return sendStep(chatId, "test_start");
   }
-  if (msg.text === "✉️ Написати нам") {
-    return bot.sendMessage(chatId, "Напишіть нам: @shuttle_school1"); // замените на нужный контакт
+  if (msg.text === "✉️ Написати адміністратору") {
+    return bot.sendMessage(chatId, "Напишіть адміністратору: @shuttle_school1"); // замените на нужный контакт
   }
   if (msg.text === "🗣 Розмовний клуб") {
     const lang = userAnswers[chatId]?.["Мова"];
