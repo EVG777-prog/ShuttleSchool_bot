@@ -17,14 +17,20 @@ bot.on("message", async (msg) => {
 
     const level = userAnswers[chatId]?.["Результат тесту"];
 
+    // Берём ник из сообщения, а не из кеша
+    const telegram = msg.from.username
+      ? "@" + msg.from.username
+      : userAnswers[chatId]?.Telegram || "-";
+
     userAnswers[chatId] = {
-      Telegram: userAnswers[chatId]?.Telegram || "-",
+      Telegram: telegram,
       Мова: lang,
       ...(level && { "Результат тесту": level }),
     };
 
     return sendStep(chatId, "start_trial");
   }
+
   if (msg.text === "❓ FAQ") return sendStep(chatId, "faq");
   if (msg.text === "📝 Тест рівня") {
     const lang = userAnswers[chatId]?.["Мова"];
@@ -32,7 +38,7 @@ bot.on("message", async (msg) => {
     return sendStep(chatId, "test_start");
   }
   if (msg.text === "✉️ Написати адміністратору") {
-    return bot.sendMessage(chatId, "Напишіть адміністратору: @shuttle_school1"); // замените на нужный контакт
+    return bot.sendMessage(chatId, "Напишіть адміністратору: @shuttle_school1");
   }
   if (msg.text === "🗣 Розмовний клуб") {
     const lang = userAnswers[chatId]?.["Мова"];
@@ -151,11 +157,11 @@ ${duo ? `• ${duo.name}: ${duo.lessons} занять по 90 хв - ${duo.price
     userAnswers[chatId][step.saveAs || "Телефон"] = msg.contact.phone_number;
     const nextStep = step.next;
     if (flow[nextStep]?.end) {
-      await bot.sendMessage(chatId, flow[nextStep].text);
+      await bot.sendMessage(chatId, flow[nextStep].text, {
+        reply_markup: getMenuKeyboard(chatId),
+      });
       sendResultsToAdmin(chatId);
-      // delete userState[chatId];
     } else {
-      await bot.sendMessage(chatId, "Дякуємо! Продовжуємо...");
       sendStep(chatId, nextStep);
     }
     return;
