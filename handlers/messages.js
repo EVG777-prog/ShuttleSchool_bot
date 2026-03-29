@@ -66,13 +66,13 @@ bot.on("message", async (msg) => {
     const duo = findRate("Тариф “Удвох”");
 
     const text = `ГРУПОВІ тарифи 📚:
-${group2x ? `• ${group2x.name}: ${group2x.lessons} занять по 90 хв - ${group2x.price} грн. (2 уроки на тиждень)` : ""}
-${group3x ? `• ${group3x.name}: ${group3x.lessons} занять по 90 хв - ${group3x.price} грн. (3 уроки на тиждень)` : ""}
+${group2x ? `• *${group2x.name}*: ${group2x.lessons} занять по 90 хв - ${group2x.price} грн. (2 уроки на тиждень)` : ""}
+${group3x ? `• *${group3x.name}*: ${group3x.lessons} занять по 90 хв - ${group3x.price} грн. (3 уроки на тиждень)` : ""}
 
 ІНДИВІДУАЛЬНІ тарифи 📚:
-${ind45 ? `• ${ind45.name}: ${ind45.lessons} занять по 45 хв - ${ind45.price} грн. (2 уроки на тиждень)` : ""}
-${ind90 ? `• ${ind90.name}: ${ind90.lessons} занять по 90 хв - ${ind90.price} грн. (2 уроки на тиждень)` : ""}
-${duo ? `• ${duo.name}: ${duo.lessons} занять по 90 хв - ${duo.price} грн. (за двох. 2 уроки на тиждень)` : ""}`;
+${ind45 ? `• *${ind45.name}*: ${ind45.lessons} занять по 45 хв - ${ind45.price} грн. (2 уроки на тиждень)` : ""}
+${ind90 ? `• *${ind90.name}*: ${ind90.lessons} занять по 90 хв - ${ind90.price} грн. (2 уроки на тиждень)` : ""}
+${duo ? `• *${duo.name}*: ${duo.lessons} занять по 90 хв - ${duo.price} грн. (за двох. 2 уроки на тиждень)` : ""}`;
 
     return bot.sendMessage(chatId, `💰 *Наші тарифи:*\n\n${text}`, {
       parse_mode: "Markdown",
@@ -146,7 +146,7 @@ ${duo ? `• ${duo.name}: ${duo.lessons} занять по 90 хв - ${duo.price
   }
 
   if (msg.text?.includes("Мова:"))
-    return askLanguage(chatId, "Оберіть нову мову:");
+    return askLanguage(chatId, "Оберіть мову, яку хочете вивчати:");
 
   const stepKey = userState[chatId];
   const step = flow[stepKey];

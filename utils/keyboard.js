@@ -73,30 +73,19 @@ function askLanguage(chatId, text = "Яку мову ви плануєте ви�
 function parseSlots(raw) {
   if (!raw?.trim()) return [];
 
-  // Новый формат с днями "ПН: ..."
-  if (/[А-ЯІЇЄ]{2}:/.test(raw)) {
-    const slots = [];
-    // Убираем все переносы строк, потом разбиваем по дням
-    const cleaned = raw.replace(/\n/g, " ");
-    const parts = cleaned.split(/(?=[А-ЯІЇЄ]{2}:)/);
-    for (const part of parts) {
-      const match = part.match(/^([А-ЯІЇЄ]{2}):\s*(.+)/);
-      if (!match) continue;
-      const day = match[1];
-      const times = match[2]
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean);
-      times.forEach((time) => slots.push(`${day} ${time}`));
-    }
-    return slots;
-  }
-
-  // Старый формат: "ПН 10:40, ПН 11:30"
   return raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const parts = line
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const [day, firstTime] = parts[0].split(" "); // "СБ 13:00" → ["СБ", "13:00"]
+      const times = [firstTime, ...parts.slice(1)];
+      return times.filter(Boolean).map((time) => `${day} ${time}`);
+    });
 }
 
 module.exports = { getMenuKeyboard, getSlotsKeyboard, askLanguage };
