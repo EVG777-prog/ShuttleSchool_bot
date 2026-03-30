@@ -19,12 +19,24 @@ async function sendStep(chatId, stepKey) {
   // Перехоплюємо end в одному місці
   if (step.end) {
     console.log("=== END STEP ===", chatId);
-    await bot.sendMessage(chatId, step.text);
+
+    const answers = userAnswers[chatId] || {};
+    let endText = flow["end"].text;
+
+    if (answers["Учбовий формат"] === "Індивідуально") {
+      endText = flow["end_individual"].text;
+    } else if (answers["Рівень"] === "Не з нуля") {
+      endText = flow["end_experience"].text;
+    } else if (answers["Вік"] === "Дитина" && !answers["Група з нуля"]) {
+      endText = flow["end_no_teen_groups"].text;
+    }
+
+    await bot.sendMessage(chatId, endText);
+
     console.log("=== SENDING TO ADMIN ===", chatId);
     sendResultsToAdmin(chatId);
 
     delete userState[chatId];
-    // Очищаємо службові поля але залишаємо відповіді
     delete userAnswers[chatId]._test;
     delete userAnswers[chatId]._currentOptions;
     delete userAnswers[chatId]._teacherSlots;
@@ -68,11 +80,8 @@ async function sendStep(chatId, stepKey) {
   if (stepKey === "zero_groups") {
     await handleZeroGroups(chatId, step, answers);
 
-    // Якщо немає груп для підлітків — відправляємо повідомлення і йдемо далі
-    if (step.noTeenGroups) {
-      delete step.noTeenGroups;
-      await bot.sendMessage(chatId, step.text);
-      return sendStep(chatId, step.next); // іде на contact → end → sendResultsToAdmin
+    if (step.options?.length === 0) {
+      return sendStep(chatId, step.next); // contact
     }
   }
 

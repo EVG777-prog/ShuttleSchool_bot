@@ -66,11 +66,8 @@ async function handleZeroGroups(chatId, step, answers) {
 
   // Якщо дитина, але груп для підлітків немає
   if (isChild && zeroLessons.length === 0) {
-    step.text =
-      "На жаль, зараз немає наборів в підліткові групи. Зазвичай такі групи стартують в вересні. Ми дамо вам знати, коли буде найближчий набір";
     step.options = [];
     step.next = "contact";
-    step.noTeenGroups = true;
     return;
   }
 

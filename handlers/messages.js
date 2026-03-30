@@ -83,43 +83,15 @@ ${duo ? `• *${duo.name}*: ${duo.lessons} занять по 90 хв - ${duo.pri
     if (!lang) return askLanguage(chatId);
 
     const teachers = await getTeachers(lang);
-
     const fs = require("fs");
 
-    const rates = await getRates();
-    const r45 = rates.find(
-      (r) => r.name.includes("Лише ти 45") && !r.name.includes("Перший"),
-    );
-    const r90 = rates.find(
-      (r) => r.name.includes("Лише ти 90") && !r.name.includes("Перший"),
-    );
-    const r45f = rates.find(
-      (r) => r.name.includes("Перший урок") && r.name.includes("45"),
-    );
-    const r90f = rates.find(
-      (r) => r.name.includes("Перший урок") && r.name.includes("90"),
-    );
-
     for (const teacher of teachers) {
-      const hasIndividual = teacher.slots45 || teacher.slots90;
-
-      const individualInfo = hasIndividual
-        ? `\n\n👤 *Можливі індивідуальні уроки*\n` +
-          (teacher.slots45
-            ? `• ${r45.name}: ${r45.price} грн / ${r45.lessons} уроків. Перший урок — ${r45f.price} грн\n🕐 ${teacher.slots45}\n`
-            : "") +
-          (teacher.slots90
-            ? `• ${r90.name}: ${r90.price} грн / ${r90.lessons} уроків. Перший урок — ${r90f.price} грн\n🕐 ${teacher.slots90}`
-            : "")
-        : "";
-
       const caption = [
         `*${teacher.name}*\n`,
         teacher.description,
         teacher.youtube
           ? `\n▶️ [Відео-знайомство](${teacher.youtube.replace("/embed/", "/watch?v=")})`
           : "",
-        individualInfo,
       ]
         .filter(Boolean)
         .join("\n");
