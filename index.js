@@ -18,11 +18,20 @@ const PORT = process.env.PORT || 3000;
   const info = await bot.getMe();
   console.log("Бот підключений:", info.username);
 
-  await bot.setMyCommands([
-    { command: "start", description: "Почати" },
-    { command: "refresh", description: "Оновити кеш (адмін)" },
-    { command: "myid", description: "Мій Chat ID" },
-  ]);
+  // Команды для всех
+  await bot.setMyCommands([{ command: "start", description: "Почати" }]);
+
+  // Команды для админа (добавляются поверх)
+  await bot.setMyCommands(
+    [
+      { command: "start", description: "Почати" },
+      { command: "refresh", description: "Оновити кеш (адмін)" },
+      { command: "myid", description: "Мій Chat ID" },
+    ],
+    {
+      scope: { type: "chat", chat_id: Number(process.env.ADMIN_CHAT_ID) },
+    },
+  );
 
   if (WEBHOOK_URL) {
     // 🚀 ПРОДАКШН — webhook (Railway)
