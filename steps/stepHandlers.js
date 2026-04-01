@@ -64,37 +64,32 @@ async function handleZeroGroups(chatId, step, answers) {
     return l.rate !== "Тариф “Підлітки”";
   });
 
-  // Якщо дитина, але груп для підлітків немає
   if (isChild && zeroLessons.length === 0) {
     step.options = [];
     step.next = "contact";
     return;
   }
 
-  const rate = rates.find((r) => r.name === zeroLessons[0].rate);
+  // Групуємо уроки по тарифу
+  const byRate = {};
+  for (const l of zeroLessons) {
+    if (!byRate[l.rate]) byRate[l.rate] = [];
+    byRate[l.rate].push(l);
+  }
 
-  const textLessons = zeroLessons
-    .map(
-      (l) => `  - група №${l.groupNumber} - ${l.schedule} (старт ${l.start})`,
-    )
-    .join("\n");
+  // Формуємо текст по кожному тарифу
+  const rateBlocks = Object.entries(byRate).map(([rateName, group]) => {
+    const rate = rates.find((r) => r.name === rateName);
+    const textLessons = group
+      .map(
+        (l) => `  - група №${l.groupNumber} - ${l.schedule} (старт ${l.start})`,
+      )
+      .join("\n");
 
-  step.text = `Ми запускаємо онлайн міні-групи з нуля:
-🗓 розклад: 
-${textLessons}
-    
-🕒 час київський
+    return `${textLessons}\n\n📚 ${rateName}:\nкожні ${rate.lessons} занять по 90 хв - ${rate.price} грн.\n${rate.duration}`;
+  });
 
-Це живі он-лайн уроки з викладачем з використанням сучасної комунікативної методики;
-
-📚 ${zeroLessons[0].rate}:
-кожні ${rate.lessons} занять — ${rate.price} грн.
-${rate.duration}
-
-Спробуйте перше заняття лише за ${priceFirst} грн
-— далі вирішуйте, чи продовжуєте ви навчання!
-
-📩 Бажаєте записатись на перший урок?`;
+  step.text = `Ми запускаємо онлайн міні-групи з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\n🕒 час київський\n\nЦе живі он-лайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття лише за ${priceFirst} грн\n— далі вирішуйте, чи продовжуєте ви навчання!\n\n📩 Бажаєте записатись на перший урок?`;
 
   step.options =
     zeroLessons.length === 1

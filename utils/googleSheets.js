@@ -9,9 +9,13 @@ let isReady = false;
 // ============= КЕШІ =============
 const cache = {
   rates: null,
-  teachers: {}, // { "Французька": [...], "Іспанська": [...] }
+  teachers: {},
   lessons: {},
-  lastUpdate: null,
+  lastUpdate: {
+    rates: null,
+    teachers: {},
+    lessons: {},
+  },
 };
 
 const CACHE_TTL = 10 * 60 * 1000; // 10 хвилин
@@ -30,22 +34,24 @@ async function initGoogle() {
 }
 
 // ============= ПЕРЕВІРКА КЕШУ =============
-function isCacheValid() {
-  if (!cache.lastUpdate) return false;
-  return Date.now() - cache.lastUpdate < CACHE_TTL;
+function isCacheValid(type, key = null) {
+  const last = key ? cache.lastUpdate[type][key] : cache.lastUpdate[type];
+  if (!last) return false;
+  return Date.now() - last < CACHE_TTL;
 }
 
 function invalidateCache() {
   cache.rates = null;
   cache.teachers = {};
-  cache.lastUpdate = null;
+  cache.lessons = {};
+  cache.lastUpdate = { rates: null, teachers: {}, lessons: {} };
   console.log("🗑️ Cache invalidated");
 }
 
 // ============= ТАРИФИ =============
 async function getRates() {
   // Якщо кеш валідний - повертаємо з кешу
-  if (cache.rates && isCacheValid()) {
+  if (cache.rates && isCacheValid("rates")) {
     console.log("📦 Rates from cache");
     return cache.rates;
   }
@@ -72,7 +78,7 @@ async function getRates() {
 
   // Зберігаємо в кеш
   cache.rates = rates;
-  cache.lastUpdate = Date.now();
+  cache.lastUpdate.rates = Date.now();
 
   return rates;
 }
@@ -80,7 +86,7 @@ async function getRates() {
 // ============= ВЧИТЕЛІ =============
 async function getTeachers(lang) {
   // Якщо є в кеші і кеш валідний - повертаємо
-  if (cache.teachers[lang] && isCacheValid()) {
+  if (cache.teachers[lang] && isCacheValid("teachers", lang)) {
     console.log(`📦 Teachers (${lang}) from cache`);
     return cache.teachers[lang];
   }
@@ -122,7 +128,7 @@ async function getTeachers(lang) {
 
   // Зберігаємо в кеш
   cache.teachers[lang] = teachers;
-  cache.lastUpdate = Date.now();
+  cache.lastUpdate.teachers[lang] = Date.now();
 
   return teachers;
 }
@@ -130,7 +136,7 @@ async function getTeachers(lang) {
 // ============= ЛЕКЦІЇ =============
 async function getLessons(lang) {
   // Якщо є в кеші і кеш валідний - повертаємо
-  if (cache.lessons[lang] && isCacheValid()) {
+  if (cache.lessons[lang] && isCacheValid("lessons", lang)) {
     console.log(`📦 Lessons (${lang}) from cache`);
     return cache.lessons[lang];
   }
@@ -172,7 +178,7 @@ async function getLessons(lang) {
 
   // Зберігаємо в кеш
   cache.lessons[lang] = lessons;
-  cache.lastUpdate = Date.now();
+  cache.lastUpdate.lessons[lang] = Date.now();
 
   return lessons;
 }
