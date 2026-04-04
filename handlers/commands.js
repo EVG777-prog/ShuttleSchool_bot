@@ -6,14 +6,14 @@ const { refreshCache } = require("../utils/googleSheets");
 
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
 
   userAnswers[chatId] = {
     Telegram: msg.from.username ? "@" + msg.from.username : "-",
   };
 
-  bot.sendMessage(chatId, "Вітаємо у школі іноземних мов Шатл 📚", {
+  await bot.sendMessage(chatId, "Вітаємо у школі іноземних мов Шатл 📚", {
     reply_markup: getMenuKeyboard(chatId),
   });
 
