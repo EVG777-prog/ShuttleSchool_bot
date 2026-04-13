@@ -50,9 +50,13 @@ async function handlePayment(step, chatId) {
 }
 
 async function handleZeroGroups(chatId, step, answers) {
-  const [lessons, rates] = await Promise.all([
+  const escapeMarkdown = (text) =>
+    String(text).replace(/[_*[\]()~`>#+=|{}.!\\-]/g, "\\$&");
+
+  const [lessons, rates, teachers] = await Promise.all([
     getLessons(answers.Мова),
     getRates(),
+    getTeachers(answers.Мова),
   ]);
 
   const priceFirst = rates.find((r) => r.name === "Перший урок в групі").price;
@@ -70,6 +74,13 @@ async function handleZeroGroups(chatId, step, answers) {
     return;
   }
 
+  const getTeacherLink = (teacherName) => {
+    const teacher = teachers.find((t) => t.name === teacherName);
+    if (!teacher?.youtube) return escapeMarkdown(teacherName);
+    const url = teacher.youtube.replace("/embed/", "/watch?v=");
+    return `[${escapeMarkdown(teacherName)}](${url})`;
+  };
+
   // Групуємо уроки по тарифу
   const byRate = {};
   for (const l of zeroLessons) {
@@ -82,14 +93,16 @@ async function handleZeroGroups(chatId, step, answers) {
     const rate = rates.find((r) => r.name === rateName);
     const textLessons = group
       .map(
-        (l) => `  - група №${l.groupNumber} - ${l.schedule} (старт ${l.start})`,
+        (l) =>
+          `  \\- група №${escapeMarkdown(l.groupNumber)} \\- ${escapeMarkdown(l.schedule)}, старт ${escapeMarkdown(l.start)}, викладачка ${getTeacherLink(l.teacher)}`,
       )
       .join("\n");
 
-    return `${textLessons}\n\n📚 ${rateName}:\nкожні ${rate.lessons} занять по 90 хв - ${rate.price} грн.\n${rate.duration}`;
+    return `${textLessons}\n\n📚 ${escapeMarkdown(rateName)}:\nкожні ${escapeMarkdown(rate.lessons)} занять по 90 хв \\- ${escapeMarkdown(rate.price)} грн\\.\n${escapeMarkdown(rate.duration)}`;
   });
 
-  step.text = `Ми запускаємо онлайн міні-групи з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\n🕒 час київський\n\nЦе живі онлайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття лише за ${priceFirst} грн\n— далі вирішуйте, чи продовжуєте ви навчання!\n\n📩 Бажаєте записатись на перший урок?`;
+  step.text = `Ми запускаємо онлайн міні\\-групи з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\n🕒 час київський\n\nЦе живі онлайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття лише за ${escapeMarkdown(priceFirst)} грн\\!\n\n📩 Бажаєте записатись на перший урок?`;
+  step.parseMode = "MarkdownV2";
 
   step.options =
     zeroLessons.length === 1

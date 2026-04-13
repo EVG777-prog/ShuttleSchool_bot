@@ -139,6 +139,7 @@ async function sendStep(chatId, stepKey) {
   const sent = await bot.sendMessage(chatId, step.text, {
     reply_markup: { inline_keyboard: keyboard },
     ...(step.parseMode && { parse_mode: step.parseMode }),
+    ...(step.parseMode && { disable_web_page_preview: true }),
   });
 
   // Після основного повідомлення — номер рахунку окремо
