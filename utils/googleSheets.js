@@ -159,6 +159,7 @@ async function getLessons(lang) {
   }
 
   const rows = await sheet.getRows();
+  console.log("ROWS", rows);
 
   const lessons = rows
     .map((row) => {
