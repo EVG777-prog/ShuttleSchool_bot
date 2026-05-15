@@ -69,11 +69,12 @@ bot.on("callback_query", async (query) => {
   }
 
   // Відповідь на питання тесту
+  // Відповідь на питання тесту
   if (data.startsWith("tq_")) {
     const options = userAnswers[chatId]._currentOptions || step.options;
-    const parts = data.split("_"); // ["tq", "2", "correct"]
+    const parts = data.split("_");
     const selectedIndex = parseInt(parts[1]);
-    const value = parts[2]; // "correct" або "wrong"
+    const value = parts[2];
 
     if (!userAnswers[chatId]._test) userAnswers[chatId]._test = [];
     userAnswers[chatId]._test.push(value);
@@ -87,7 +88,6 @@ bot.on("callback_query", async (query) => {
 
     try {
       const resultEmoji = value === "correct" ? "🟢" : "🔴";
-
       const updatedText = step.text.replace(
         /▸ (\d+\/\d+)/,
         `▸ $1 ${resultEmoji}`,
@@ -104,8 +104,10 @@ bot.on("callback_query", async (query) => {
 
     await new Promise((r) => setTimeout(r, 800));
     delete userAnswers[chatId]._currentOptions;
-    bot.answerCallbackQuery(query.id);
-    return sendStep(chatId, step.next);
+
+    await bot.answerCallbackQuery(query.id);
+    await sendStep(chatId, step.next);
+    return; // ← ВОТ ТАК ПРАВИЛЬНО
   }
 
   // Звичайні кнопки
