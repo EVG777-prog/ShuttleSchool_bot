@@ -98,10 +98,10 @@ async function handleZeroGroups(chatId, step, answers) {
       )
       .join("\n");
 
-    return `${textLessons}\n\n📚 ${escapeMarkdown(rateName)}:\nкожні ${escapeMarkdown(rate.lessons)} занять по 90 хв \\- ${escapeMarkdown(rate.price)} грн\\.\n${escapeMarkdown(rate.duration)}`;
+    return `${textLessons}\n\n🕒 час київський\n\n📚 ${escapeMarkdown(rateName)}:\nкожні ${escapeMarkdown(rate.lessons)} занять по 90 хв \\- ${escapeMarkdown(rate.price)} грн\\.\n${escapeMarkdown(rate.duration)}`;
   });
 
-  step.text = `Ми запускаємо онлайн міні\\-групи з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\n🕒 час київський\n\nЦе живі онлайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття лише за ${escapeMarkdown(priceFirst)} грн\\!\n\n📩 Бажаєте записатись на перший урок?`;
+  step.text = `Ми запускаємо онлайн міні\\-групи з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\nЦе живі онлайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття лише за ${escapeMarkdown(priceFirst)} грн\\!\n\n📩 Бажаєте записатись на перший урок?`;
   step.parseMode = "MarkdownV2";
 
   step.options =
