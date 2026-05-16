@@ -35,6 +35,14 @@ bot.on("message", async (msg) => {
   if (msg.text === "📝 Тест рівня") {
     const lang = userAnswers[chatId]?.["Мова"];
     if (!lang) return askLanguage(chatId);
+
+    // Очищаем данные предыдущего теста
+    delete userAnswers[chatId]._test;
+    delete userAnswers[chatId]._currentOptions;
+    delete userAnswers[chatId]["Результат тесту"];
+
+    console.log(`🎯 Початок нового тесту для ${chatId}, мова: ${lang}`);
+
     return sendStep(chatId, "test_start");
   }
   if (msg.text === "✉️ Написати адміністратору") {
