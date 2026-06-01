@@ -11,7 +11,7 @@ bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
 
   // Кнопки меню — до будь-яких перевірок
-  if (msg.text === "📋 Записатись на урок") {
+  if (msg.text === "📋 Записатись") {
     const lang = userAnswers[chatId]?.["Мова"];
     if (!lang) return askLanguage(chatId);
 
