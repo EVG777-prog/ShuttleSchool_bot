@@ -163,7 +163,13 @@ async function getLessons(lang) {
   const lessons = rows
     .map((row) => {
       const data = row._rawData;
-      console.log("LESSON ROW:", JSON.stringify(data));
+      console.log(
+        "LESSON ROW:",
+        lang,
+        JSON.stringify(data),
+        "length:",
+        data.length,
+      );
       if (!data || data.length < 3) return null;
 
       return {
