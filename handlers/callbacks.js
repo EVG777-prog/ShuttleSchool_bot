@@ -69,7 +69,6 @@ bot.on("callback_query", async (query) => {
   }
 
   // Відповідь на питання тесту
-  // Відповідь на питання тесту
   if (data.startsWith("tq_")) {
     const options = userAnswers[chatId]._currentOptions || step.options;
     const parts = data.split("_");

@@ -183,7 +183,8 @@ function handleTestResult(chatId, step) {
   else if (score <= 28) level = "B2";
   else level = "C1";
 
-  userAnswers[chatId]["Результат тесту"] = level;
+  userAnswers[chatId]["Результат тесту"] =
+    `${level}, ${score} з ${total} правильних відповідей`;
 
   step.text = step.text
     .replace("{score}", score)
