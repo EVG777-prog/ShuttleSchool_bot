@@ -94,7 +94,7 @@ async function handleZeroGroups(chatId, step, answers) {
     const textLessons = group
       .map(
         (l) =>
-          `  \\➤ група №${escapeMarkdown(l.groupNumber)} \\- ${escapeMarkdown(l.schedule)}, старт ${escapeMarkdown(l.start)}, викладач ${getTeacherLink(l.teacher)}`,
+          `  ➤ група №${escapeMarkdown(l.groupNumber)} \\- ${escapeMarkdown(l.schedule)}, старт ${escapeMarkdown(l.start)}, викладач ${getTeacherLink(l.teacher)}`,
       )
       .join("\n");
 
