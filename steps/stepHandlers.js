@@ -22,8 +22,8 @@ async function handleIndividualTariff(step) {
   console.log({ r45f, r90f, r45, r90 }); // ← проверим что нашли
 
   step.text = `Можемо запропонувати два варіанти індивідуальних занять:
-- ${r45.name}: ${r45.price} грн за кожні ${r45.lessons} уроків по 45 хв, 2 рази на тиждень. Пробний урок — ${r45f.price} грн.
-- ${r90.name}: ${r90.price} грн за кожні ${r90.lessons} уроків по 90 хв, 2 рази на тиждень. Пробний урок — ${r90f.price} грн.`;
+➤ ${r45.name}: ${r45.price} грн за кожні ${r45.lessons} уроків по 45 хв, 2 рази на тиждень. Пробний урок — ${r45f.price} грн.
+➤ ${r90.name}: ${r90.price} грн за кожні ${r90.lessons} уроків по 90 хв, 2 рази на тиждень. Пробний урок — ${r90f.price} грн.`;
 }
 
 async function handlePayment(step, chatId) {
@@ -94,7 +94,7 @@ async function handleZeroGroups(chatId, step, answers) {
     const textLessons = group
       .map(
         (l) =>
-          `  \\- група №${escapeMarkdown(l.groupNumber)} \\- ${escapeMarkdown(l.schedule)}, старт ${escapeMarkdown(l.start)}, викладач ${getTeacherLink(l.teacher)}`,
+          `  \\➤ група №${escapeMarkdown(l.groupNumber)} \\- ${escapeMarkdown(l.schedule)}, старт ${escapeMarkdown(l.start)}, викладач ${getTeacherLink(l.teacher)}`,
       )
       .join("\n");
 
