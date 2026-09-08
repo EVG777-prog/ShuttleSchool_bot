@@ -2,6 +2,24 @@ const bot = require("../bot");
 const { userAnswers } = require("../state");
 const { getRates, getTeachers, getLessons } = require("../utils/googleSheets");
 
+const LANGUAGES = {
+  Французька: {
+    flag: "🇫🇷",
+    genitive: "французької",
+    url: "https://shuttleschool.com.ua/pages/french.html#teachers",
+  },
+  Іспанська: {
+    flag: "🇪🇸",
+    genitive: "іспанської",
+    url: "https://shuttleschool.com.ua/pages/spanish.html#teachers",
+  },
+  Італійська: {
+    flag: "🇮🇹",
+    genitive: "італійської",
+    url: "https://shuttleschool.com.ua/pages/italian.html#teachers",
+  },
+};
+
 async function handleIndividualTariff(step) {
   const rates = await getRates();
 
@@ -59,6 +77,8 @@ async function handleZeroGroups(chatId, step, answers) {
     getTeachers(answers.Мова),
   ]);
 
+  const lang = LANGUAGES[answers.Мова] || { flag: "", genitive: "" };
+
   const priceFirst = rates.find((r) => r.name === "Перший урок в групі").price;
   const isChild = answers["Вік"] === "Дитина";
 
@@ -101,7 +121,7 @@ async function handleZeroGroups(chatId, step, answers) {
     return `${textLessons}\n\n🕒 час київський\n\n📚 ${escapeMarkdown(rateName)}:\nкожні ${escapeMarkdown(rate.lessons)} занять по 90 хв \\- ${escapeMarkdown(rate.price)} грн\\.\n${escapeMarkdown(rate.duration)}`;
   });
 
-  step.text = `Ми запускаємо онлайн міні\\-групи з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\nЦе живі онлайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття в ній лише за ${escapeMarkdown(priceFirst)} грн\\!\n\n📩 Бажаєте записатись на перший урок?`;
+  step.text = `Наразі відкрито набір в наступні онлайн міні\\-групи ${escapeMarkdown(lang.genitive)} ${lang.flag} з нуля:\n\n🗓 розклад:\n\n${rateBlocks.join("\n\n")}\n\nЦе живі онлайн уроки з викладачем з використанням сучасної комунікативної методики;\nОбирайте групу, яка вам підходить за розкладом, та спробуйте перше заняття в ній лише за ${escapeMarkdown(priceFirst)} грн\\!\n\n📩 Бажаєте записатись на перший урок?`;
   step.parseMode = "MarkdownV2";
 
   step.options =
@@ -128,20 +148,14 @@ async function handleIndividualTeachers(chatId, step, answers) {
     return true; // shouldSkip
   }
 
-  const langFlag =
-    { Французька: "🇫🇷", Іспанська: "🇪🇸", Італійська: "🇮🇹" }[answers.Мова] || "";
+  const lang = LANGUAGES[answers.Мова] || { flag: "", url: "" };
+  const langFlag = lang.flag;
+  const langUrl = lang.url;
 
   // Формируем текст со всеми учителями и слотами
   const slotsText = available
     .map((t) => `${t.name}:\n${t[slotsKey]}`)
     .join("\n\n");
-
-  const langUrl =
-    {
-      Французька: "https://shuttleschool.com.ua/pages/french.html#teachers",
-      Іспанська: "https://shuttleschool.com.ua/pages/spanish.html#teachers",
-      Італійська: "https://shuttleschool.com.ua/pages/italian.html#teachers",
-    }[answers.Мова] || "";
 
   step.text = `${langFlag} Наразі є наступні вільні слоти по ${duration} хвилин для розкладу:\n\n${slotsText}\n\n🕒 час київський\nВам потрібно обрати викладача і розклад (2 слоти).\n\nІнформацію про викладачів ви знайдете за посиланням: ${langUrl}`;
 
