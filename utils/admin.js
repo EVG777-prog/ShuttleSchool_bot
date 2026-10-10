@@ -1,8 +1,6 @@
-const bot = require("../bot");
-const { userAnswers } = require("../state");
-
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
+function createAdmin(bot, { userAnswers }) {
 function sendResultsToAdmin(chatId) {
   console.log("=== sendResultsToAdmin called ===", chatId, userAnswers[chatId]);
   const answers = userAnswers[chatId];
@@ -21,5 +19,7 @@ function sendResultsToAdmin(chatId) {
     });
   }
 }
+return { sendResultsToAdmin };
+}
 
-module.exports = { sendResultsToAdmin };
+module.exports = { createAdmin };

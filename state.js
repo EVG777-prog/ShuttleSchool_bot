@@ -3,15 +3,19 @@ const testFrench = require("./data/testFrench.json");
 const testSpain = require("./data/testSpain.json");
 const testItalian = require("./data/testItalian.json");
 
-const flow = { ...trialLesson };
-
 const tests = {
   french: testFrench,
   spain: testSpain,
   italian: testItalian,
 };
 
-const userState = {};
-const userAnswers = {};
+function createState() {
+  return {
+    flow: JSON.parse(JSON.stringify(trialLesson)),
+    userState: {},
+    userAnswers: {},
+    tests: JSON.parse(JSON.stringify(tests)),
+  };
+}
 
-module.exports = { flow, tests, userState, userAnswers };
+module.exports = { createState };

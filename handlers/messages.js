@@ -1,18 +1,17 @@
-const bot = require("../bot");
 const path = require("path");
 const fs = require("fs");
-const { flow, userState, userAnswers } = require("../state");
-const { sendStep } = require("../steps/sendStep");
-const { askLanguage } = require("../utils/keyboard");
-const { sendResultsToAdmin } = require("../utils/admin");
 const { getRates, getTeachers } = require("../utils/googleSheets");
 
+function registerMessages(bot, state, actions, config) {
+const { flow, userState, userAnswers } = state;
+const { sendStep, getMenuKeyboard, askLanguage, sendResultsToAdmin } = actions;
+const { language } = config;
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
 
   // Кнопки меню — до будь-яких перевірок
   if (msg.text === "📋 Записатись") {
-    const lang = userAnswers[chatId]?.["Мова"];
+    const lang = language || userAnswers[chatId]?.["Мова"];
     if (!lang) return askLanguage(chatId);
 
     const level = userAnswers[chatId]?.["Результат тесту"];
@@ -33,7 +32,7 @@ bot.on("message", async (msg) => {
 
   if (msg.text === "❓ FAQ") return sendStep(chatId, "faq");
   if (msg.text === "📝 Тест рівня") {
-    const lang = userAnswers[chatId]?.["Мова"];
+    const lang = language || userAnswers[chatId]?.["Мова"];
     if (!lang) return askLanguage(chatId);
 
     // Очищаем данные предыдущего теста
@@ -49,7 +48,7 @@ bot.on("message", async (msg) => {
     return bot.sendMessage(chatId, "Напишіть адміністратору: @shuttle_school1");
   }
   if (msg.text === "🗣 Розмовний клуб") {
-    const lang = userAnswers[chatId]?.["Мова"];
+    const lang = language || userAnswers[chatId]?.["Мова"];
     if (!lang) return askLanguage(chatId);
 
     const clubStep = {
@@ -87,7 +86,7 @@ ${duo ? `• *${duo.name}*: ${duo.lessons} занять по 90 хв - ${duo.pri
     });
   }
   if (msg.text === "👩‍🏫 Викладачі") {
-    const lang = userAnswers[chatId]?.["Мова"];
+    const lang = language || userAnswers[chatId]?.["Мова"];
     if (!lang) return askLanguage(chatId);
 
     const teachers = await getTeachers(lang);
@@ -125,7 +124,7 @@ ${duo ? `• *${duo.name}*: ${duo.lessons} занять по 90 хв - ${duo.pri
     return;
   }
 
-  if (msg.text?.includes("Мова:"))
+  if (!language && msg.text?.includes("Мова:"))
     return askLanguage(chatId, "Оберіть мову, яку хочете вивчати:");
 
   const stepKey = userState[chatId];
@@ -176,3 +175,6 @@ ${duo ? `• *${duo.name}*: ${duo.lessons} занять по 90 хв - ${duo.pri
     sendStep(chatId, step.next);
   }
 });
+}
+
+module.exports = { registerMessages };

@@ -1,10 +1,7 @@
-const bot = require("../bot");
-const { flow, userState, userAnswers } = require("../state");
-const { sendStep } = require("../steps/sendStep");
-const { getSlotsKeyboard, getMenuKeyboard } = require("../utils/keyboard");
-const { sendResultsToAdmin } = require("../utils/admin");
-const { getTestLang } = require("../utils/testLang");
-
+function registerCallbacks(bot, state, actions, config) {
+const { flow, userState, userAnswers } = state;
+const { sendStep, getSlotsKeyboard, getMenuKeyboard, sendResultsToAdmin, getTestLang } = actions;
+const { language } = config;
 bot.on("callback_query", async (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
@@ -15,7 +12,11 @@ bot.on("callback_query", async (query) => {
 
   // Вибір мови (до перевірки stepKey)
   if (data.startsWith("setlang_")) {
-    const lang = data.split("_")[1];
+    if (language) {
+      await bot.answerCallbackQuery(query.id, { text: `Цей бот: ${language}` });
+      return;
+    }
+    const lang = data.slice("setlang_".length);
     if (!userAnswers[chatId]) userAnswers[chatId] = {};
     userAnswers[chatId]["Мова"] = lang;
 
@@ -79,10 +80,13 @@ bot.on("callback_query", async (query) => {
     userAnswers[chatId]._test.push(value);
 
     const newKeyboard = options.map((opt, index) => {
-      let text = opt.label;
-      if (opt.value === "correct") text = `✅ ${opt.label} ✅`;
-      else if (index === selectedIndex) text = `❌ ${opt.label} ❌`;
-      return [{ text, callback_data: `tq_${index}_${opt.value}` }];
+      const button = {
+        text: opt.label,
+        callback_data: `tq_${index}_${opt.value}`,
+      };
+      if (opt.value === "correct") button.style = "success";
+      else if (index === selectedIndex) button.style = "danger";
+      return [button];
     });
 
     try {
@@ -93,9 +97,9 @@ bot.on("callback_query", async (query) => {
       );
 
       await bot.editMessageText(updatedText, {
+        reply_markup: { inline_keyboard: newKeyboard },
         chat_id: chatId,
         message_id: query.message.message_id,
-        reply_markup: { inline_keyboard: newKeyboard },
       });
     } catch (e) {
       console.log("Edit failed:", e.message);
@@ -110,8 +114,12 @@ bot.on("callback_query", async (query) => {
   }
 
   // Звичайні кнопки
+  const availableOptions =
+    stepKey === "zero_groups" || stepKey === "individual_teachers"
+      ? userAnswers[chatId]._currentOptions || []
+      : step?.options;
   const option =
-    step?.options?.find((o) => String(o.value) === data) ||
+    availableOptions?.find((o) => String(o.value) === data) ||
     (data.startsWith("info_") ? step?.options?.[data.split("_")[1]] : null);
 
   if (!option) return bot.answerCallbackQuery(query.id);
@@ -125,6 +133,9 @@ bot.on("callback_query", async (query) => {
     userAnswers[chatId][step.saveAs] = option.value;
     console.log(`✅ Збережено ${step.saveAs}:`, option.value);
   }
+  if (stepKey === "start_trial" && option.value === "Дитина") {
+    userAnswers[chatId]["Учбовий формат"] = "Індивідуально";
+  }
 
   if (stepKey.startsWith("speaking_club")) {
     await bot.sendMessage(
@@ -137,7 +148,14 @@ bot.on("callback_query", async (query) => {
   const nextStep = option.next || step.next;
   console.log(`➡️ Перехід на крок:`, nextStep);
 
-  sendStep(chatId, nextStep);
-
-  bot.answerCallbackQuery(query.id);
+  await bot.answerCallbackQuery(query.id);
+  try {
+    await sendStep(chatId, nextStep);
+  } catch (error) {
+    console.error(`Failed to process callback for ${chatId}:`, error);
+    await bot.sendMessage(chatId, "Не вдалося продовжити запис. Спробуйте ще раз або напишіть адміністратору.");
+  }
 });
+}
+
+module.exports = { registerCallbacks };

@@ -1,5 +1,3 @@
-const bot = require("../bot");
-const { userAnswers } = require("../state");
 const { getRates, getTeachers, getLessons } = require("../utils/googleSheets");
 
 const LANGUAGES = {
@@ -44,7 +42,7 @@ async function handleIndividualTariff(step) {
 ➤ ${r90.name}: ${r90.price} грн за кожні ${r90.lessons} уроків по 90 хв, 2 рази на тиждень. Пробний урок — ${r90f.price} грн.`;
 }
 
-async function handlePayment(step, chatId) {
+async function handlePayment(step, chatId, paymentSettings, userAnswers) {
   const answers = userAnswers[chatId];
   const rates = await getRates();
 
@@ -64,7 +62,14 @@ async function handlePayment(step, chatId) {
         ? r45f.price
         : r90f.price;
 
-  step.text = `Добре 💙\nВам необхідно внести оплату першого уроку ${price} грн ФОП Лещенко С.Б. рахунок UA523220010000026006300055066, ЄДРПОУ: 2992609434, призначення платежу: оплата уроків.\n\nМаємо зауважити, що місце за вами бронюється після оплати першого уроку, в інакшому випадку - хтось може бути спритнішим і його забрати 🌝\nПісля оплати напишіть, будь ласка, прізвище та ім'я платника чи надішліть скрін ☺️`;
+  const bankAccount = paymentSettings.bankAccount || "";
+  const fop = paymentSettings.fop || "";
+  const paymentDetailsText = [fop, bankAccount && `рахунок ${bankAccount}`]
+    .filter(Boolean)
+    .join(", ");
+
+  step.text = `Добре 💙\nВам необхідно внести оплату першого уроку ${price} грн${paymentDetailsText ? ` ${paymentDetailsText}` : ""}, призначення платежу: оплата уроків.\n\nМаємо зауважити, що місце за вами бронюється після оплати першого уроку, в інакшому випадку - хтось може бути спритнішим і його забрати 🌝\nПісля оплати напишіть, будь ласка, прізвище та ім'я платника чи надішліть скрін ☺️`;
+  return bankAccount;
 }
 
 async function handleZeroGroups(chatId, step, answers) {
@@ -80,19 +85,7 @@ async function handleZeroGroups(chatId, step, answers) {
   const lang = LANGUAGES[answers.Мова] || { flag: "", genitive: "" };
 
   const priceFirst = rates.find((r) => r.name === "Перший урок в групі").price;
-  const isChild = answers["Вік"] === "Дитина";
-
-  const zeroLessons = lessons.filter((l) => {
-    if (l.level !== "з нуля") return false;
-    if (isChild) return l.rate === "Тариф “Підлітки”";
-    return l.rate !== "Тариф “Підлітки”";
-  });
-
-  if (isChild && zeroLessons.length === 0) {
-    step.options = [];
-    step.next = "contact";
-    return;
-  }
+  const zeroLessons = lessons.filter((l) => l.level === "з нуля");
 
   const getTeacherLink = (teacherName) => {
     const teacher = teachers.find((t) => t.name === teacherName);
@@ -133,7 +126,7 @@ async function handleZeroGroups(chatId, step, answers) {
         }));
 }
 
-async function handleIndividualTeachers(chatId, step, answers) {
+async function handleIndividualTeachers(bot, chatId, step, answers) {
   const teachers = await getTeachers(answers.Мова);
   const slotsKey = answers.Тривалість === "45 хв" ? "slots45" : "slots90";
   const duration = answers.Тривалість === "45 хв" ? "45" : "90";
@@ -163,7 +156,7 @@ async function handleIndividualTeachers(chatId, step, answers) {
   return false;
 }
 
-async function handleIndividualSlots(chatId, step, answers) {
+async function handleIndividualSlots(bot, chatId, step, answers) {
   const teachers = await getTeachers(answers.Мова);
   const teacher = teachers.find((t) => t.name === answers.Вчитель);
 
@@ -180,13 +173,14 @@ async function handleIndividualSlots(chatId, step, answers) {
     return true;
   }
 
-  userAnswers[chatId]._teacherSlots = raw;
-  userAnswers[chatId]._maxSlots = 2; // ограничение
+  answers._teacherSlots = raw;
+  answers._maxSlots = 2; // ограничение
   return false;
 }
 
-function handleTestResult(chatId, step) {
-  const results = userAnswers[chatId]._test || [];
+function handleTestResult(chatId, step, userAnswers) {
+  const answers = userAnswers[chatId];
+  const results = answers._test || [];
   const score = results.filter((v) => v === "correct").length;
   const total = results.length;
 
@@ -197,7 +191,7 @@ function handleTestResult(chatId, step) {
   else if (score <= 28) level = "B2";
   else level = "C1";
 
-  userAnswers[chatId]["Результат тесту"] =
+  answers["Результат тесту"] =
     `${level}, ${score} з ${total} правильних відповідей`;
 
   step.text = step.text
@@ -206,11 +200,15 @@ function handleTestResult(chatId, step) {
     .replace("{level}", level);
 }
 
-module.exports = {
+function createStepHandlers(bot, { userAnswers }) {
+return {
   handleIndividualTariff,
-  handlePayment,
+  handlePayment: (...args) => handlePayment(...args, userAnswers),
   handleZeroGroups,
   handleIndividualTeachers,
   handleIndividualSlots,
-  handleTestResult,
+  handleTestResult: (chatId, step) => handleTestResult(chatId, step, userAnswers),
 };
+}
+
+module.exports = { createStepHandlers };

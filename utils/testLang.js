@@ -1,16 +1,15 @@
-const { flow, tests, userAnswers } = require("../state");
-
 const LANG_MAP = {
   Французька: "french",
   Іспанська: "spain",
   Італійська: "italian",
 };
 
+function createTestLang({ flow, tests, userAnswers }, language) {
 function getTestLang(chatId) {
-  const selectedLang = userAnswers[chatId]["Мова"];
-  const language = LANG_MAP[selectedLang];
+  const selectedLang = language || userAnswers[chatId]["Мова"];
+  const testKey = LANG_MAP[selectedLang];
 
-  if (!language) {
+  if (!testKey) {
     console.error("Язык не найден:", selectedLang);
     return;
   }
@@ -22,8 +21,10 @@ function getTestLang(chatId) {
     }
   });
 
-  Object.assign(flow, tests[language]);
+  Object.assign(flow, tests[testKey]);
   console.log(`✅ Тест завантажено для мови: ${selectedLang}`);
 }
+return { getTestLang };
+}
 
-module.exports = { getTestLang };
+module.exports = { createTestLang };

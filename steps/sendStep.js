@@ -1,8 +1,7 @@
-const bot = require("../bot");
-const { flow, userState, userAnswers } = require("../state");
-const { getSlotsKeyboard } = require("../utils/keyboard");
-const { getTestLang } = require("../utils/testLang");
-const { sendResultsToAdmin } = require("../utils/admin");
+function createSendStep(bot, { flow, userState, userAnswers }, keyboard, testLang, admin, config) {
+const { getSlotsKeyboard } = keyboard;
+const { getTestLang } = testLang;
+const { sendResultsToAdmin } = admin;
 const {
   handleIndividualTariff,
   handlePayment,
@@ -10,11 +9,12 @@ const {
   handleIndividualTeachers,
   handleIndividualSlots,
   handleTestResult,
-} = require("./stepHandlers");
+} = require("./stepHandlers").createStepHandlers(bot, { userAnswers });
 
 async function sendStep(chatId, stepKey) {
-  const step = flow[stepKey];
-  if (!step) return;
+  const flowStep = flow[stepKey];
+  if (!flowStep) return;
+  const step = { ...flowStep };
 
   // Перехоплюємо end в одному місці
   if (step.end) {
@@ -27,8 +27,6 @@ async function sendStep(chatId, stepKey) {
       endText = flow["end_individual"].text;
     } else if (answers["Рівень"] === "Не з нуля") {
       endText = flow["end_experience"].text;
-    } else if (answers["Вік"] === "Дитина" && !answers["Група з нуля"]) {
-      endText = flow["end_no_teen_groups"].text;
     }
 
     await bot.sendMessage(chatId, endText);
@@ -63,6 +61,7 @@ async function sendStep(chatId, stepKey) {
   }
 
   // Динамічні обробники кроків
+  let paymentAccount = "";
 
   if (stepKey === "individual_tariff") await handleIndividualTariff(step);
 
@@ -74,7 +73,11 @@ async function sendStep(chatId, stepKey) {
     ) {
       return sendStep(chatId, step.next);
     }
-    await handlePayment(step, chatId);
+    paymentAccount = await handlePayment(
+      step,
+      chatId,
+      config,
+    );
   }
 
   if (stepKey === "zero_groups") {
@@ -83,11 +86,14 @@ async function sendStep(chatId, stepKey) {
     if (step.options?.length === 0) {
       return sendStep(chatId, step.next); // contact
     }
+    // Dynamic choices must be kept per user because `step` is a local copy.
+    userAnswers[chatId]._currentOptions = step.options;
   }
 
   if (stepKey === "individual_teachers") {
-    const shouldSkip = await handleIndividualTeachers(chatId, step, answers);
+    const shouldSkip = await handleIndividualTeachers(bot, chatId, step, answers);
     if (shouldSkip) return sendStep(chatId, step.next);
+    userAnswers[chatId]._currentOptions = step.options;
   }
 
   if (stepKey === "test_result") {
@@ -98,8 +104,15 @@ async function sendStep(chatId, stepKey) {
   // Підготовка клавіатури
   let keyboard = [];
 
+  if (stepKey === "payment" && paymentAccount) {
+    keyboard = [[{
+      text: paymentAccount,
+      copy_text: { text: paymentAccount },
+    }]];
+  }
+
   if (stepKey === "individual_slots") {
-    const shouldSkip = await handleIndividualSlots(chatId, step, answers);
+    const shouldSkip = await handleIndividualSlots(bot, chatId, step, answers);
     if (shouldSkip) return sendStep(chatId, step.next);
     keyboard = getSlotsKeyboard(chatId);
   } else if (step.options) {
@@ -107,6 +120,7 @@ async function sendStep(chatId, stepKey) {
 
     if (stepKey.startsWith("test_q")) {
       options = [...step.options].sort(() => Math.random() - 0.5);
+      options.push({ label: "Я не знаю відповіді", value: "wrong" });
       userAnswers[chatId]._currentOptions = options;
 
       keyboard = options.map((opt, index) => [
@@ -142,14 +156,12 @@ async function sendStep(chatId, stepKey) {
     ...(step.parseMode && { disable_web_page_preview: true }),
   });
 
-  // Після основного повідомлення — номер рахунку окремо
-  if (stepKey === "payment") {
-    await bot.sendMessage(chatId, "UA523220010000026006300055066");
-  }
-
   if (stepKey === "individual_slots") {
     userAnswers[chatId]._slotsMessageId = sent.message_id;
   }
 }
 
-module.exports = { sendStep };
+return { sendStep };
+}
+
+module.exports = { createSendStep };

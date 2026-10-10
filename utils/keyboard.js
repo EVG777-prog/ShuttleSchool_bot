@@ -1,6 +1,3 @@
-const bot = require("../bot");
-const { userAnswers } = require("../state");
-
 const LANG_FLAGS = {
   Французька: "🇫🇷",
   Іспанська: "🇪🇸",
@@ -13,13 +10,16 @@ const LANG_KEYBOARD = [
   [{ text: "🇮🇹 Італійська", callback_data: "setlang_Італійська" }],
 ];
 
+function createKeyboard(bot, { userAnswers, language, showLanguageMenu }) {
 function getMenuKeyboard(chatId) {
-  const lang = userAnswers[chatId]?.["Мова"] || "не обрана";
+  const lang = language || userAnswers[chatId]?.["Мова"] || "не обрана";
   const flag = LANG_FLAGS[lang] || "🌍";
 
   return {
     keyboard: [
-      [{ text: `${flag} Мова: ${lang}` }, { text: "👩‍🏫 Викладачі" }],
+      ...(showLanguageMenu
+        ? [[{ text: `${flag} Мова: ${lang}` }, { text: "👩‍🏫 Викладачі" }]]
+        : [[{ text: "👩‍🏫 Викладачі" }]]),
       [{ text: "📋 Записатись" }, { text: "✉️ Написати адміністратору" }],
       [{ text: "📝 Тест рівня" }, { text: "❓ FAQ" }],
       [{ text: "💰 Тарифи" }, { text: "🗣 Розмовний клуб" }],
@@ -65,6 +65,8 @@ function askLanguage(chatId, text = "Яку мову ви плануєте ви�
     reply_markup: { inline_keyboard: LANG_KEYBOARD },
   });
 }
+return { getMenuKeyboard, getSlotsKeyboard, askLanguage };
+}
 
 // Парсит оба формата слотов в плоский массив ["ПН 10:40", "ВТ 9:00", ...]
 function parseSlots(raw) {
@@ -85,4 +87,4 @@ function parseSlots(raw) {
     });
 }
 
-module.exports = { getMenuKeyboard, getSlotsKeyboard, askLanguage };
+module.exports = { createKeyboard };
