@@ -69,14 +69,21 @@ function createRuntime(settings) {
     console.log(`Бот підключений (${settings.id}): @${info.username}`);
     await bot.setMyCommands([{ command: "start", description: "Почати" }]);
     if (process.env.ADMIN_CHAT_ID) {
-      await bot.setMyCommands(
-        [
-          { command: "start", description: "Почати" },
-          { command: "refresh", description: "Оновити кеш (адмін)" },
-          { command: "myid", description: "Мій Chat ID" },
-        ],
-        { scope: { type: "chat", chat_id: Number(process.env.ADMIN_CHAT_ID) } },
-      );
+      try {
+        await bot.setMyCommands(
+          [
+            { command: "start", description: "Почати" },
+            { command: "refresh", description: "Оновити кеш (адмін)" },
+            { command: "myid", description: "Мій Chat ID" },
+          ],
+          { scope: { type: "chat", chat_id: Number(process.env.ADMIN_CHAT_ID) } },
+        );
+      } catch (err) {
+        console.error(
+          `⚠️ Не вдалося налаштувати команди для ADMIN_CHAT_ID=${process.env.ADMIN_CHAT_ID}:`,
+          err.message,
+        );
+      }
     }
   }
 
