@@ -5,7 +5,7 @@ const { getRates, getTeachers } = require("../utils/googleSheets");
 function registerMessages(bot, state, actions, config) {
 const { flow, userState, userAnswers } = state;
 const { sendStep, getMenuKeyboard, askLanguage, sendResultsToAdmin } = actions;
-const { language } = config;
+const { language, telegram } = config;
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
 
@@ -45,7 +45,7 @@ bot.on("message", async (msg) => {
     return sendStep(chatId, "test_start");
   }
   if (msg.text === "✉️ Написати адміністратору") {
-    return bot.sendMessage(chatId, "Напишіть адміністратору: @shuttle_school1");
+    return bot.sendMessage(chatId, `Напишіть адміністратору: ${telegram}`);
   }
   if (msg.text === "🗣 Розмовний клуб") {
     const lang = language || userAnswers[chatId]?.["Мова"];

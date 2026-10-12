@@ -16,7 +16,7 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL;
 const PORT = process.env.PORT || 3000;
 const WEBHOOK_BASE_URL = WEBHOOK_URL?.replace(/\/+$/, "");
 
-function createRuntime(settings) {
+function createRuntime(settings, allBotSettings) {
   const token = process.env[settings.tokenEnv];
   if (!token) throw new Error(`Missing Telegram token: ${settings.tokenEnv}`);
   const bot = createBot(token);
@@ -24,9 +24,17 @@ function createRuntime(settings) {
   const config = {
     language: settings.language,
     nameSchool: settings.nameSchool,
+    telegram: settings.telegram,
     showLanguageMenu: settings.showLanguageMenu,
-    bankAccount: settings.bankAccount,
-    fop: settings.fop,
+    getPaymentSettings: (language) => {
+      const languageSettings = allBotSettings.find(
+        (botSettings) => botSettings.language === language,
+      );
+      return {
+        bankAccount: settings.bankAccount ?? languageSettings?.bankAccount,
+        fop: settings.fop ?? languageSettings?.fop,
+      };
+    },
   };
   const keyboard = createKeyboard(bot, { ...state, ...config });
   const admin = createAdmin(bot, state);
@@ -62,7 +70,9 @@ function createRuntime(settings) {
 
   await initGoogle();
   console.log("🚀 Google Sheets ready");
-  const runtimes = botSettings.bots.map(createRuntime);
+  const runtimes = botSettings.bots.map((settings) =>
+    createRuntime(settings, botSettings.bots),
+  );
 
   for (const { bot, settings } of runtimes) {
     const info = await bot.getMe();

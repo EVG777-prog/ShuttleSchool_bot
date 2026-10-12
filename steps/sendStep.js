@@ -76,7 +76,7 @@ async function sendStep(chatId, stepKey) {
     paymentAccount = await handlePayment(
       step,
       chatId,
-      config,
+      config.getPaymentSettings(answers.Мова),
     );
   }
 
