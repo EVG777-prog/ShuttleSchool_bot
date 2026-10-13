@@ -1,11 +1,22 @@
 const { refreshCache } = require("../utils/googleSheets");
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 
+const LANGUAGE_WELCOME = {
+  Італійська: { genitive: "італійської", flag: "🇮🇹" },
+  Французька: { genitive: "французької", flag: "🇫🇷" },
+  Іспанська: { genitive: "іспанської", flag: "🇪🇸" },
+  Чеська: { genitive: "чеської", flag: "🇨🇿" },
+};
+
 function registerCommands(bot, state, actions, config) {
   const { userAnswers } = state;
   const { sendStep, getTestLang } = actions;
   const { getMenuKeyboard, askLanguage } = actions.keyboard;
   const { language, nameSchool } = config;
+  const languageWelcome = LANGUAGE_WELCOME[language];
+  const welcomeText = language
+    ? `Вітаємо у школі ${languageWelcome?.genitive || "іноземних"} мови ${nameSchool || "Шатл"} ${languageWelcome?.flag || "📚"}`
+    : `Вітаємо у школі іноземних мов ${nameSchool || "Шатл"} 📚`;
 
   bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
@@ -17,7 +28,7 @@ function registerCommands(bot, state, actions, config) {
 
     await bot.sendMessage(
       chatId,
-      `Вітаємо у школі іноземних мов ${nameSchool || "Шатл"} 📚`,
+      welcomeText,
       {
       reply_markup: getMenuKeyboard(chatId),
       },
