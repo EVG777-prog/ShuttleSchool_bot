@@ -57,6 +57,10 @@ bot.on("message", async (msg) => {
       Італійська: "speaking_club_italian",
     }[lang];
 
+    if (!clubStep) {
+      return bot.sendMessage(chatId, "Поки що не має розмовного клубу");
+    }
+
     return sendStep(chatId, clubStep);
   }
   if (msg.text === "💰 Тарифи") {

@@ -39,5 +39,15 @@ module.exports = {
       bankAccount: "UA073220010000026008330017168",
       fop: "ФОП Лещенко Т.С., ЄДРПОУ: 3479106201",
     },
+    {
+      id: "czech",
+      tokenEnv: "BOT_CZECH_TOKEN",
+      nameSchool: "Czoven",
+      telegram: "@czoven",
+      language: "Чеська",
+      showLanguageMenu: false,
+      bankAccount: "UA073220010000026008330017168",
+      fop: "ФОП Лещенко Т.С., ЄДРПОУ: 3479106201",
+    },
   ],
 };

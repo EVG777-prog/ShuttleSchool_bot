@@ -57,7 +57,7 @@ function createRuntime(settings, allBotSettings) {
 (async () => {
   const ids = new Set();
   const envNames = new Set();
-  const validLanguages = ["Французька", "Іспанська", "Італійська"];
+  const validLanguages = ["Французька", "Іспанська", "Італійська", "Чеська"];
   for (const settings of botSettings.bots) {
     if (ids.has(settings.id)) throw new Error(`Duplicate bot id: ${settings.id}`);
     if (envNames.has(settings.tokenEnv)) throw new Error(`Duplicate token setting: ${settings.tokenEnv}`);

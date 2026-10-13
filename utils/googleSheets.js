@@ -97,6 +97,7 @@ async function getTeachers(lang) {
     Французька: "French_teachers",
     Іспанська: "Spanish_teachers",
     Італійська: "Italian_teachers",
+    Чеська: "Czech_teachers",
   };
 
   const sheetName = map[lang];
@@ -147,6 +148,7 @@ async function getLessons(lang) {
     Французька: "French_lessons",
     Іспанська: "Spanish_lessons",
     Італійська: "Italian_lessons",
+    Чеська: "Czech_lessons",
   };
 
   const sheetName = map[lang];
@@ -201,11 +203,13 @@ async function refreshCache() {
     getTeachers("Французька"),
     getTeachers("Іспанська"),
     getTeachers("Італійська"),
+    getTeachers("Чеська"),
   ]);
   await Promise.all([
     getLessons("Французька"),
     getLessons("Іспанська"),
     getLessons("Італійська"),
+    getLessons("Чеська"),
   ]);
 
   console.log("✅ Cache refreshed");

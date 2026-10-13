@@ -1,0 +1,341 @@
+{
+  "test_start": {
+    "text": "Вам необхідно відповісти на 33 питання для визначення вашого рівня чеської мови",
+    "autoNext": true,
+    "next": "test_q1"
+  },
+  "test_q1": {
+    "text": "▸ 1/33\n\nJá ___ v Praze.",
+    "options": [
+      { "label": "bydlím", "value": "correct" },
+      { "label": "bydlíš", "value": "wrong" },
+      { "label": "bydlíme", "value": "wrong" },
+      { "label": "bydlí", "value": "wrong" }
+    ],
+    "next": "test_q2"
+  },
+  "test_q2": {
+    "text": "▸ 2/33\n\nKaždé ráno ___ kávu.",
+    "options": [
+      { "label": "piju", "value": "correct" },
+      { "label": "piješ", "value": "wrong" },
+      { "label": "pijeme", "value": "wrong" },
+      { "label": "pijí", "value": "wrong" }
+    ],
+    "next": "test_q3"
+  },
+  "test_q3": {
+    "text": "▸ 3/33\n\nNemám ___, už jsem jedl.",
+    "options": [
+      { "label": "žízeň", "value": "wrong" },
+      { "label": "hlad", "value": "correct" },
+      { "label": "strach", "value": "wrong" },
+      { "label": "čas", "value": "wrong" }
+    ],
+    "next": "test_q4"
+  },
+  "test_q4": {
+    "text": "▸ 4/33\n\nZítra jedeme ___ kina.",
+    "options": [
+      { "label": "na", "value": "wrong" },
+      { "label": "v", "value": "wrong" },
+      { "label": "do", "value": "correct" },
+      { "label": "k", "value": "wrong" }
+    ],
+    "next": "test_q5"
+  },
+  "test_q5": {
+    "text": "▸ 5/33\n\nTo je ___ sestra.",
+    "options": [
+      { "label": "můj", "value": "wrong" },
+      { "label": "moje", "value": "correct" },
+      { "label": "moji", "value": "wrong" },
+      { "label": "mého", "value": "wrong" }
+    ],
+    "next": "test_q6"
+  },
+  "test_q6": {
+    "text": "▸ 6/33\n\nVčera jsme ___ zajímavý film.",
+    "options": [
+      { "label": "vidíme", "value": "wrong" },
+      { "label": "uvidíme", "value": "wrong" },
+      { "label": "vidět", "value": "wrong" },
+      { "label": "viděli", "value": "correct" }
+    ],
+    "next": "test_q7"
+  },
+  "test_q7": {
+    "text": "▸ 7/33\n\nKolik ___ tenhle lístek?",
+    "options": [
+      { "label": "stojí", "value": "correct" },
+      { "label": "stojíš", "value": "wrong" },
+      { "label": "stojíme", "value": "wrong" },
+      { "label": "stát", "value": "wrong" }
+    ],
+    "next": "test_q8"
+  },
+  "test_q8": {
+    "text": "▸ 8/33\n\nUž půl hodiny čekám ___ autobus.",
+    "options": [
+      { "label": "pro", "value": "wrong" },
+      { "label": "od", "value": "wrong" },
+      { "label": "na", "value": "correct" },
+      { "label": "za", "value": "wrong" }
+    ],
+    "next": "test_q9"
+  },
+  "test_q9": {
+    "text": "▸ 9/33\n\nPřestože se teprve učíš česky, mluvíš docela ___.",
+    "options": [
+      { "label": "dobrý", "value": "wrong" },
+      { "label": "dobře", "value": "correct" },
+      { "label": "dobrého", "value": "wrong" },
+      { "label": "dobrým", "value": "wrong" }
+    ],
+    "next": "test_q10"
+  },
+  "test_q10": {
+    "text": "▸ 10/33\n\nBydlím tady ___ roku 2022.",
+    "options": [
+      { "label": "během", "value": "wrong" },
+      { "label": "po", "value": "wrong" },
+      { "label": "za", "value": "wrong" },
+      { "label": "od", "value": "correct" }
+    ],
+    "next": "test_q11"
+  },
+  "test_q11": {
+    "text": "▸ 11/33\n\nKdybych ___ víc času, naučil bych se další jazyk.",
+    "options": [
+      { "label": "mám", "value": "wrong" },
+      { "label": "budu mít", "value": "wrong" },
+      { "label": "měl", "value": "correct" },
+      { "label": "měl jsem", "value": "wrong" }
+    ],
+    "next": "test_q12"
+  },
+  "test_q12": {
+    "text": "▸ 12/33\n\nNež odejdeš, musíš ___ domácí úkol.",
+    "options": [
+      { "label": "udělat", "value": "correct" },
+      { "label": "uděláš", "value": "wrong" },
+      { "label": "udělal", "value": "wrong" },
+      { "label": "udělání", "value": "wrong" }
+    ],
+    "next": "test_q13"
+  },
+  "test_q13": {
+    "text": "▸ 13/33\n\nKniha, ___ jsem si včera koupil, je velmi zajímavá.",
+    "options": [
+      { "label": "který", "value": "wrong" },
+      { "label": "kterou", "value": "correct" },
+      { "label": "kterému", "value": "wrong" },
+      { "label": "kterým", "value": "wrong" }
+    ],
+    "next": "test_q14"
+  },
+  "test_q14": {
+    "text": "▸ 14/33\n\nUž se moc těším ___ letní dovolenou.",
+    "options": [
+      { "label": "pro", "value": "wrong" },
+      { "label": "o", "value": "wrong" },
+      { "label": "na", "value": "correct" },
+      { "label": "k", "value": "wrong" }
+    ],
+    "next": "test_q15"
+  },
+  "test_q15": {
+    "text": "▸ 15/33\n\nZatímco jsem vařil večeři, děti ___ televizi.",
+    "options": [
+      { "label": "sledovaly", "value": "correct" },
+      { "label": "zhlédly", "value": "wrong" },
+      { "label": "budou sledovat", "value": "wrong" },
+      { "label": "sledují", "value": "wrong" }
+    ],
+    "next": "test_q16"
+  },
+  "test_q16": {
+    "text": "▸ 16/33\n\nNemohl se zúčastnit schůzky, protože ___ nemocný.",
+    "options": [
+      { "label": "je", "value": "wrong" },
+      { "label": "bude", "value": "wrong" },
+      { "label": "byl", "value": "correct" },
+      { "label": "by", "value": "wrong" }
+    ],
+    "next": "test_q17"
+  },
+  "test_q17": {
+    "text": "▸ 17/33\n\nKdybych to býval věděl, ___ bych ti o tom.",
+    "options": [
+      { "label": "řeknu", "value": "wrong" },
+      { "label": "řekl", "value": "correct" },
+      { "label": "říkal", "value": "wrong" },
+      { "label": "říkám", "value": "wrong" }
+    ],
+    "next": "test_q18"
+  },
+  "test_q18": {
+    "text": "▸ 18/33\n\nJe důležité, abys ___ na schůzku včas.",
+    "options": [
+      { "label": "přijdeš", "value": "wrong" },
+      { "label": "přijít", "value": "wrong" },
+      { "label": "přicházíš", "value": "wrong" },
+      { "label": "přišel", "value": "correct" }
+    ],
+    "next": "test_q19"
+  },
+  "test_q19": {
+    "text": "▸ 19/33\n\nNejenže se omluvil, ___ také nabídl pomoc.",
+    "options": [
+      { "label": "ale", "value": "correct" },
+      { "label": "protože", "value": "wrong" },
+      { "label": "takže", "value": "wrong" },
+      { "label": "zatímco", "value": "wrong" }
+    ],
+    "next": "test_q20"
+  },
+  "test_q20": {
+    "text": "▸ 20/33\n\nČím déle na něj čekám, ___ jsem nervóznější.",
+    "options": [
+      { "label": "proto", "value": "wrong" },
+      { "label": "tak", "value": "wrong" },
+      { "label": "tím", "value": "correct" },
+      { "label": "tedy", "value": "wrong" }
+    ],
+    "next": "test_q21"
+  },
+  "test_q21": {
+    "text": "▸ 21/33\n\nPřestože ___ celý den, nakonec jsme vyrazili na výlet.",
+    "options": [
+      { "label": "prší", "value": "wrong" },
+      { "label": "pršelo", "value": "correct" },
+      { "label": "bude pršet", "value": "wrong" },
+      { "label": "pršet", "value": "wrong" }
+    ],
+    "next": "test_q22"
+  },
+  "test_q22": {
+    "text": "▸ 22/33\n\nJeho návrh stojí za to důkladně ___.",
+    "options": [
+      { "label": "zvážit", "value": "correct" },
+      { "label": "zvážení", "value": "wrong" },
+      { "label": "zvažoval", "value": "wrong" },
+      { "label": "zvažuje", "value": "wrong" }
+    ],
+    "next": "test_q23"
+  },
+  "test_q23": {
+    "text": "▸ 23/33\n\nZpráva byla zveřejněna, aniž by ji někdo předem ___.",
+    "options": [
+      { "label": "ověřuje", "value": "wrong" },
+      { "label": "ověřit", "value": "wrong" },
+      { "label": "ověřil", "value": "correct" },
+      { "label": "ověří", "value": "wrong" }
+    ],
+    "next": "test_q24"
+  },
+  "test_q24": {
+    "text": "▸ 24/33\n\nPokud by se situace ___, budeme vás neprodleně informovat.",
+    "options": [
+      { "label": "změní", "value": "wrong" },
+      { "label": "mění", "value": "wrong" },
+      { "label": "změnit", "value": "wrong" },
+      { "label": "změnila", "value": "correct" }
+    ],
+    "next": "test_q25"
+  },
+  "test_q25": {
+    "text": "▸ 25/33\n\nMěl jsem za to, že schůzka už ___.",
+    "options": [
+      { "label": "skončí", "value": "wrong" },
+      { "label": "skončila", "value": "correct" },
+      { "label": "skončit", "value": "wrong" },
+      { "label": "končící", "value": "wrong" }
+    ],
+    "next": "test_q26"
+  },
+  "test_q26": {
+    "text": "▸ 26/33\n\nAčkoli se to na první pohled nezdá, jedná se o poměrně ___ problém.",
+    "options": [
+      { "label": "složitě", "value": "wrong" },
+      { "label": "složitost", "value": "wrong" },
+      { "label": "složitý", "value": "correct" },
+      { "label": "složitým", "value": "wrong" }
+    ],
+    "next": "test_q27"
+  },
+  "test_q27": {
+    "text": "▸ 27/33\n\nJeho argumentace byla přesvědčivá, avšak nikoli zcela ___.",
+    "options": [
+      { "label": "neprůstřelná", "value": "correct" },
+      { "label": "neprůstřelně", "value": "wrong" },
+      { "label": "neprůstřelnost", "value": "wrong" },
+      { "label": "neprůstřelnému", "value": "wrong" }
+    ],
+    "next": "test_q28"
+  },
+  "test_q28": {
+    "text": "▸ 28/33\n\nVzhledem k neúplným údajům je třeba výsledky interpretovat s určitou ___.",
+    "options": [
+      { "label": "opatrný", "value": "wrong" },
+      { "label": "opatrnost", "value": "wrong" },
+      { "label": "opatrnosti", "value": "correct" },
+      { "label": "opatrností", "value": "correct" }
+    ],
+    "next": "test_q29"
+  },
+  "test_q29": {
+    "text": "▸ 29/33\n\nNež konečné rozhodnutí učiníme, měli bychom zvážit všechny možné ___.",
+    "options": [
+      { "label": "důsledky", "value": "correct" },
+      { "label": "důsledkům", "value": "wrong" },
+      { "label": "důsledcích", "value": "wrong" },
+      { "label": "důsledkem", "value": "wrong" }
+    ],
+    "next": "test_q30"
+  },
+  "test_q30": {
+    "text": "▸ 30/33\n\nCo znamená české slovní spojení „vzít něco v potaz“?",
+    "options": [
+      { "label": "Záměrně něco přehlédnout", "value": "wrong" },
+      { "label": "Něco zohlednit při rozhodování", "value": "correct" },
+      { "label": "Něco odmítnout bez vysvětlení", "value": "wrong" },
+      { "label": "Převzít za něco odpovědnost", "value": "wrong" }
+    ],
+    "next": "test_q31"
+  },
+  "test_q31": {
+    "text": "▸ 31/33\n\nKdyby býval nabídku přijal, dnes ___ v zahraničí.",
+    "options": [
+      { "label": "pracuje", "value": "wrong" },
+      { "label": "bude pracovat", "value": "wrong" },
+      { "label": "pracoval by", "value": "correct" },
+      { "label": "pracoval", "value": "wrong" }
+    ],
+    "next": "test_q32"
+  },
+  "test_q32": {
+    "text": "▸ 32/33\n\nAť už se rozhodne jakkoli, musíme jeho volbu ___.",
+    "options": [
+      { "label": "respektovat", "value": "correct" },
+      { "label": "respektujeme", "value": "wrong" },
+      { "label": "respektovali", "value": "wrong" },
+      { "label": "respektování", "value": "wrong" }
+    ],
+    "next": "test_q33"
+  },
+  "test_q33": {
+    "text": "▸ 33/33\n\nZáměrně uvedl zavádějící informace, aby ___ skutečný stav věcí.",
+    "options": [
+      { "label": "objasnil", "value": "wrong" },
+      { "label": "potvrdil", "value": "wrong" },
+      { "label": "zdůraznil", "value": "wrong" },
+      { "label": "zkreslil", "value": "correct" }
+    ],
+    "next": "test_result"
+  },
+  "test_result": {
+    "text": "Дякуємо 😌 Ваш результат: {score} з {total} правильних відповідей!\nВаш рівень: {level}\n\nНаш менеджер звʼяжиться з вами і запропонує варіанти відповідно до вашого рівня. Гарного дня 😌",
+    "next": "end"
+  }
+}

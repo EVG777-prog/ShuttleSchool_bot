@@ -2,6 +2,7 @@ const LANG_MAP = {
   Французька: "french",
   Іспанська: "spain",
   Італійська: "italian",
+  Чеська: "czech",
 };
 
 function createTestLang({ flow, tests, userAnswers }, language) {

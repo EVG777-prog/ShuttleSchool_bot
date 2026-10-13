@@ -125,7 +125,12 @@ bot.on("callback_query", async (query) => {
   if (!option) return bot.answerCallbackQuery(query.id);
 
   if (data.startsWith("info_")) {
-    await bot.sendMessage(chatId, option.info);
+    const lang = language || userAnswers[chatId]?.["Мова"];
+    const durations = option.levelDurations?.[lang] || option.levelDurations?.default;
+    const info = durations
+      ? option.info.replace("{levelDurations}", durations)
+      : option.info;
+    await bot.sendMessage(chatId, info);
     return bot.answerCallbackQuery(query.id);
   }
 
