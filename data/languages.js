@@ -22,7 +22,7 @@ module.exports = {
     {
       id: "french",
       tokenEnv: "BOT_FRENCH_TOKEN",
-      nameSchool: "Ile-de-France",
+      nameSchool: "Île-de-France",
       telegram: "@iledefrance_ecole",
       language: "Французька",
       showLanguageMenu: false,
@@ -42,7 +42,7 @@ module.exports = {
     {
       id: "czech",
       tokenEnv: "BOT_CZECH_TOKEN",
-      nameSchool: "Czoven",
+      nameSchool: "Czoven [Човен]",
       telegram: "@czoven",
       language: "Чеська",
       showLanguageMenu: false,
