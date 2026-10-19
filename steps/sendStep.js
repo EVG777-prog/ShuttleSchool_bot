@@ -91,7 +91,7 @@ async function sendStep(chatId, stepKey) {
   }
 
   if (stepKey === "individual_teachers") {
-    const shouldSkip = await handleIndividualTeachers(bot, chatId, step, answers);
+    const shouldSkip = await handleIndividualTeachers(bot, chatId, step, answers, config.teachersUrl);
     if (shouldSkip) return sendStep(chatId, step.next);
     userAnswers[chatId]._currentOptions = step.options;
   }

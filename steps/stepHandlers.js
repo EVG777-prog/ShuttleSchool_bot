@@ -126,7 +126,7 @@ async function handleZeroGroups(chatId, step, answers) {
         }));
 }
 
-async function handleIndividualTeachers(bot, chatId, step, answers) {
+async function handleIndividualTeachers(bot, chatId, step, answers, teachersUrl) {
   const teachers = await getTeachers(answers.Мова);
   const slotsKey = answers.Тривалість === "45 хв" ? "slots45" : "slots90";
   const duration = answers.Тривалість === "45 хв" ? "45" : "90";
@@ -143,14 +143,17 @@ async function handleIndividualTeachers(bot, chatId, step, answers) {
 
   const lang = LANGUAGES[answers.Мова] || { flag: "", url: "" };
   const langFlag = lang.flag;
-  const langUrl = lang.url;
+  const langUrl = teachersUrl || lang.url;
 
   // Формируем текст со всеми учителями и слотами
   const slotsText = available
     .map((t) => `${t.name}:\n${t[slotsKey]}`)
     .join("\n\n");
 
-  step.text = `${langFlag} Наразі є наступні вільні слоти по ${duration} хвилин для розкладу:\n\n${slotsText}\n\n🕒 час київський\nВам потрібно обрати викладача і розклад (2 слоти).\n\nІнформацію про викладачів ви знайдете за посиланням: ${langUrl}`;
+  const teachersInfo = langUrl
+    ? `\n\nІнформацію про викладачів ви знайдете за посиланням: ${langUrl}`
+    : "";
+  step.text = `${langFlag} Наразі є наступні вільні слоти по ${duration} хвилин для розкладу:\n\n${slotsText}\n\n🕒 час київський\nВам потрібно обрати викладача і розклад (2 слоти).${teachersInfo}`;
 
   step.options = available.map((t) => ({ label: t.name, value: t.name }));
   return false;

@@ -23,6 +23,7 @@ function createRuntime(settings, allBotSettings) {
   const state = createState();
   const config = {
     language: settings.language,
+    teachersUrl: settings.teachersUrl,
     nameSchool: settings.nameSchool,
     telegram: settings.telegram,
     showLanguageMenu: settings.showLanguageMenu,
