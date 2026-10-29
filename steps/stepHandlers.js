@@ -64,11 +64,16 @@ async function handlePayment(step, chatId, paymentSettings, userAnswers) {
 
   const bankAccount = paymentSettings.bankAccount || "";
   const fop = paymentSettings.fop || "";
+  const paymentUrl = paymentSettings.paymentUrl || "";
+  const paymentUrlText = paymentUrl
+    ? `\n\nАбо ви можете сплатити картою на нашому сайті без комісій у будь якій валюті за посиланням:  ${paymentUrl}`
+    : "";
+
   const paymentDetailsText = [fop, bankAccount && `рахунок ${bankAccount}`]
     .filter(Boolean)
     .join(", ");
 
-  step.text = `Добре 💙\nВам необхідно внести оплату першого уроку ${price} грн${paymentDetailsText ? ` ${paymentDetailsText}` : ""}, призначення платежу: оплата уроків.\n\nМаємо зауважити, що місце за вами бронюється після оплати першого уроку, в інакшому випадку - хтось може бути спритнішим і його забрати 🌝\nПісля оплати напишіть, будь ласка, прізвище та ім'я платника чи надішліть скрін ☺️`;
+  step.text = `Добре 💙\nВам необхідно внести оплату першого уроку ${price} грн${paymentDetailsText ? ` ${paymentDetailsText}` : ""}, призначення платежу: оплата уроків.${paymentUrlText}\n\nМаємо зауважити, що місце за вами бронюється після оплати першого уроку, в інакшому випадку - хтось може бути спритнішим і його забрати 🌝\nПісля оплати напишіть, будь ласка, прізвище та ім'я платника чи надішліть скрін ☺️`;
   return bankAccount;
 }
 
@@ -126,7 +131,13 @@ async function handleZeroGroups(chatId, step, answers) {
         }));
 }
 
-async function handleIndividualTeachers(bot, chatId, step, answers, teachersUrl) {
+async function handleIndividualTeachers(
+  bot,
+  chatId,
+  step,
+  answers,
+  teachersUrl,
+) {
   const teachers = await getTeachers(answers.Мова);
   const slotsKey = answers.Тривалість === "45 хв" ? "slots45" : "slots90";
   const duration = answers.Тривалість === "45 хв" ? "45" : "90";
@@ -204,14 +215,15 @@ function handleTestResult(chatId, step, userAnswers) {
 }
 
 function createStepHandlers(bot, { userAnswers }) {
-return {
-  handleIndividualTariff,
-  handlePayment: (...args) => handlePayment(...args, userAnswers),
-  handleZeroGroups,
-  handleIndividualTeachers,
-  handleIndividualSlots,
-  handleTestResult: (chatId, step) => handleTestResult(chatId, step, userAnswers),
-};
+  return {
+    handleIndividualTariff,
+    handlePayment: (...args) => handlePayment(...args, userAnswers),
+    handleZeroGroups,
+    handleIndividualTeachers,
+    handleIndividualSlots,
+    handleTestResult: (chatId, step) =>
+      handleTestResult(chatId, step, userAnswers),
+  };
 }
 
 module.exports = { createStepHandlers };

@@ -34,13 +34,21 @@ function createRuntime(settings, allBotSettings) {
       return {
         bankAccount: settings.bankAccount ?? languageSettings?.bankAccount,
         fop: settings.fop ?? languageSettings?.fop,
+        paymentUrl: settings.paymentUrl ?? languageSettings?.paymentUrl,
       };
     },
   };
   const keyboard = createKeyboard(bot, { ...state, ...config });
   const admin = createAdmin(bot, state);
   const testLang = createTestLang(state, settings.language);
-  const { sendStep } = createSendStep(bot, state, keyboard, testLang, admin, config);
+  const { sendStep } = createSendStep(
+    bot,
+    state,
+    keyboard,
+    testLang,
+    admin,
+    config,
+  );
   const actions = {
     ...keyboard,
     keyboard,
@@ -60,12 +68,16 @@ function createRuntime(settings, allBotSettings) {
   const envNames = new Set();
   const validLanguages = ["Французька", "Іспанська", "Італійська", "Чеська"];
   for (const settings of botSettings.bots) {
-    if (ids.has(settings.id)) throw new Error(`Duplicate bot id: ${settings.id}`);
-    if (envNames.has(settings.tokenEnv)) throw new Error(`Duplicate token setting: ${settings.tokenEnv}`);
+    if (ids.has(settings.id))
+      throw new Error(`Duplicate bot id: ${settings.id}`);
+    if (envNames.has(settings.tokenEnv))
+      throw new Error(`Duplicate token setting: ${settings.tokenEnv}`);
     ids.add(settings.id);
     envNames.add(settings.tokenEnv);
     if (settings.language && !validLanguages.includes(settings.language)) {
-      throw new Error(`Unsupported language for bot ${settings.id}: ${settings.language}`);
+      throw new Error(
+        `Unsupported language for bot ${settings.id}: ${settings.language}`,
+      );
     }
   }
 
@@ -87,7 +99,9 @@ function createRuntime(settings, allBotSettings) {
             { command: "refresh", description: "Оновити кеш (адмін)" },
             { command: "myid", description: "Мій Chat ID" },
           ],
-          { scope: { type: "chat", chat_id: Number(process.env.ADMIN_CHAT_ID) } },
+          {
+            scope: { type: "chat", chat_id: Number(process.env.ADMIN_CHAT_ID) },
+          },
         );
       } catch (err) {
         console.error(

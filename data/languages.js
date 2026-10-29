@@ -49,6 +49,7 @@ module.exports = {
       telegram: "@czoven",
       language: "Чеська",
       teachersUrl: "https://czoven.com.ua/#teachers",
+      paymentUrl: "https://czoven.com.ua/pages/payment.html",
       showLanguageMenu: false,
       bankAccount: "UA073220010000026008330017168",
       fop: "ФОП Лещенко Т.С., ЄДРПОУ: 3479106201",
