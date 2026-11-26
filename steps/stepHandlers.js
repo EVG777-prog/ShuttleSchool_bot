@@ -1,6 +1,11 @@
 const { getRates, getTeachers, getLessons } = require("../utils/googleSheets");
 
 const LANGUAGES = {
+  Чеська: {
+    flag: "🇨🇿",
+    genitive: "чеської",
+    url: "",
+  },
   Французька: {
     flag: "🇫🇷",
     genitive: "французької",
